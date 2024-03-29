@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: appTheme,
-            initialRoute: "login",
+            initialRoute: "all_lessons",
             routes: {
               'login': (context) => Login(),
               'signup': (context) => Signup(),
@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
                     email: '',
                   ),
               'javascript': (context) => const JavaScript(),
-              'questions': (context) => Questions(),
+              'questions': (context) => const Questions(),
             }));
   }
 }
