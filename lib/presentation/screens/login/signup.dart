@@ -30,12 +30,24 @@ class AuthService {
   }
 }
 
-class Signup extends StatelessWidget {
+class Signup extends StatefulWidget {
   Signup({super.key});
+
+  @override
+  State<Signup> createState() => _SignupState();
+}
+
+class _SignupState extends State<Signup> {
   final TextEditingController usernameController = TextEditingController();
 
+  bool _isPasswordVisible = false;
+
+  bool _isConfirmPasswordVisible = false;
+
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController passwordController = TextEditingController();
+
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
@@ -174,25 +186,28 @@ class Signup extends StatelessWidget {
                     child: TextField(
                       controller: passwordController,
                       decoration: InputDecoration(
-                          prefixText: '  ',
-                          hintText: 'Password',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
+                        prefixText: '  ',
+                        hintText: 'Password',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 12),
+                        suffixIcon: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                          child: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Color(0xFF644AFF),
                           ),
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 12),
-                          suffixIcon: Theme(
-                            data: ThemeData(
-                              iconTheme: const IconThemeData(
-                                color: Color(0xFF644AFF),
-                              ),
-                            ),
-                            child: IconButton(
-                              icon: const Icon(Icons.visibility_off),
-                              onPressed: () {},
-                            ),
-                          )),
-                      obscureText: true,
+                        ),
+                      ),
+                      obscureText: !_isPasswordVisible,
                     )),
                 SizedBox(height: screenHeight * 0.02),
                 const Row(
@@ -212,25 +227,29 @@ class Signup extends StatelessWidget {
                     child: TextField(
                       controller: confirmPasswordController,
                       decoration: InputDecoration(
-                          prefixText: '  ',
-                          hintText: 'Confirm Password',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
+                        prefixText: '  ',
+                        hintText: 'Confirm Password',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 12),
+                        suffixIcon: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isConfirmPasswordVisible =
+                                  !_isConfirmPasswordVisible;
+                            });
+                          },
+                          child: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Color(0xFF644AFF),
                           ),
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 12),
-                          suffixIcon: Theme(
-                            data: ThemeData(
-                              iconTheme: const IconThemeData(
-                                color: Color(0xFF644AFF),
-                              ),
-                            ),
-                            child: IconButton(
-                              icon: const Icon(Icons.visibility_off),
-                              onPressed: () {},
-                            ),
-                          )),
-                      obscureText: true,
+                        ),
+                      ),
+                      obscureText: !_isConfirmPasswordVisible,
                     )),
                 SizedBox(height: screenHeight * 0.06),
                 WideButton(

@@ -22,61 +22,57 @@ class MyDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
+        height: 500,
         color: const Color(0xFF644AFF),
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              SizedBox(height: 20),
-              Center(
-                child: Expanded(
-                  child: ListView.builder(
-                    itemCount: drawerItems.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                        contentPadding: EdgeInsets.all(0),
-                        dense: true,
-                        visualDensity: VisualDensity(horizontal: -4),
-                        textColor: index == drawerItems.length - 1
+        child: Column(
+          children: <Widget>[
+            const SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: drawerItems.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    contentPadding: const EdgeInsets.all(0),
+                    dense: true,
+                    visualDensity: const VisualDensity(horizontal: -4),
+                    textColor: index == drawerItems.length - 1
+                        ? Colors.red
+                        : Colors.white,
+                    leading: Icon(
+                      drawerItems[index]['icon'],
+                      color: index == drawerItems.length - 1
+                          ? Colors.red
+                          : Colors.white,
+                    ),
+                    title: Text(
+                      drawerItems[index]['title'],
+                      style: TextStyle(
+                        color: index == drawerItems.length - 1
                             ? Colors.red
                             : Colors.white,
-                        leading: Icon(
-                          drawerItems[index]['icon'],
-                          color: index == drawerItems.length - 1
-                              ? Colors.red
-                              : Colors.white,
-                        ),
-                        title: Text(
-                          drawerItems[index]['title'],
-                          style: TextStyle(
-                            color: index == drawerItems.length - 1
-                                ? Colors.red
-                                : Colors.white,
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                      );
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
                     },
-                  ),
-                ),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.all(0),
-                dense: true,
-                visualDensity:
-                    const VisualDensity(horizontal: -4, vertical: -4),
-                leading: const Icon(Icons.close, color: Colors.white),
-                title: const Text(
-                  'Close',
-                  style: TextStyle(color: Colors.white),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
+                  );
                 },
               ),
-            ],
-          ),
+            ),
+            ListTile(
+              contentPadding: const EdgeInsets.all(0),
+              dense: true,
+              visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+              leading: const Icon(Icons.close, color: Colors.white),
+              title: const Text(
+                'Close',
+                style: TextStyle(color: Colors.white),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
         ),
       ),
     );

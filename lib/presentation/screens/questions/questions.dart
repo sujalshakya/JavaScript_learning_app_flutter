@@ -1,10 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:javascript/constants/constants.dart';
 import 'package:javascript/constants/text_style.dart';
 import 'package:http/http.dart' as http;
-import 'package:javascript/presentation/screens/questions_details.dart';
+import 'package:javascript/presentation/screens/questions/question_model.dart';
+import 'package:javascript/presentation/screens/questions/questions_details.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 
 class Questions extends StatefulWidget {
   const Questions({super.key});
@@ -14,38 +17,58 @@ class Questions extends StatefulWidget {
 }
 
 class _QuestionTabState extends State<Questions> {
-  List<Map<String, dynamic>> questions = [];
+  late Box<QuestionModel> questionBox;
+
+  late List<QuestionModel> questions;
 
   @override
   void initState() {
     super.initState();
+    _initHive();
     fetchQuestions();
   }
 
+  Future<void> _initHive() async {
+    final appDocumentDirectory =
+        await path_provider.getApplicationDocumentsDirectory();
+    Hive.init(appDocumentDirectory.path);
+    Hive.registerAdapter<QuestionModel>(QuestionModelAdapter());
+    questionBox = await Hive.openBox<QuestionModel>('questions');
+    setState(() {
+      questions = questionBox.values.toList();
+    });
+  }
+
   Future<void> fetchQuestions() async {
-    try {
-      final response = await http.get(Uri.parse(
-          'https://api.codynn.com/api/question?difficulty=easy&category=Basic&language=javascript&page=1&limit=10&search=number'));
+    if (questionBox.isEmpty) {
+      try {
+        final response = await http.get(Uri.parse(
+            'https://api.codynn.com/api/question?difficulty=easy&category=Basic&language=javascript&page=1&limit=10&search=number'));
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> responseData = json.decode(response.body);
 
-        if (responseData.containsKey('questions')) {
-          final List<dynamic> questionsData = responseData['questions'];
-
-          setState(() {
-            questions = questionsData.cast<Map<String, dynamic>>();
-          });
-          print(questions);
+          if (responseData.containsKey('questions')) {
+            final List<dynamic> questionsData = responseData['questions'];
+            for (var data in questionsData) {
+              final question = QuestionModel()
+                ..question = data['question']
+                ..algorithm = data['algorithm']
+                ..explanation = data['solutions'][0]['explanation']
+                ..flowchart = data['flowchart']
+                ..code = data['solutions'][0]['code'];
+              questionBox.add(question);
+            }
+          } else {
+            print(
+                'Invalid response format: Questions not found in response data');
+          }
         } else {
-          print(
-              'Invalid response format: Questions not found in response data');
+          print('Failed to fetch questions: ${response.statusCode}');
         }
-      } else {
-        print('Failed to fetch questions: ${response.statusCode}');
+      } catch (e) {
+        print('Error fetching questions: $e');
       }
-    } catch (e) {
-      print('Error fetching questions: $e');
     }
   }
 
@@ -163,14 +186,14 @@ class _QuestionTabState extends State<Questions> {
                     itemCount: questions.length,
                     itemBuilder: (context, index) {
                       final question = questions[index];
-                      final solution = question['solutions'][0];
                       return QuestionTab(
-                          index: index,
-                          question: question['question'],
-                          algorithm: question['algorithm'],
-                          explanation: solution['explanation'],
-                          flowchart: question['flowchart'],
-                          code: solution['code']);
+                        index: index,
+                        question: question.question,
+                        algorithm: question.algorithm,
+                        explanation: question.explanation,
+                        flowchart: question.flowchart,
+                        code: question.code,
+                      );
                     },
                   ),
                 ),

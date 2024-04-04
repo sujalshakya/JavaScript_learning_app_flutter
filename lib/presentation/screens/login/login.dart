@@ -5,6 +5,7 @@ import 'package:javascript/presentation/widgets/bottom_nav_bar.dart';
 import 'package:javascript/presentation/widgets/widebutton.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class AuthService {
   static const String baseUrl = 'https://api.codynn.com/api';
@@ -22,17 +23,28 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      jsonDecode(response.body);
+      final responseData = jsonDecode(response.body);
+      final token = responseData['token'];
+
+      var box = await Hive.openBox('SETTINGS');
+      await box.put('token', token);
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 }
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   Login({Key? key}) : super(key: key);
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  bool _isPasswordVisible = false;
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController passwordController = TextEditingController();
 
   void _login(BuildContext context) async {
@@ -129,8 +141,21 @@ class Login extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                      suffixIcon: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                        child: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Color(0xFF644AFF),
+                        ),
+                      ),
                     ),
-                    obscureText: true,
+                    obscureText: !_isPasswordVisible,
                   ),
                 ),
                 SizedBox(height: screenHeight * 0.01),
@@ -142,7 +167,7 @@ class Login extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>  ResetPassword()),
+                              builder: (context) => ResetPassword()),
                         );
                       },
                       child: const Text(
@@ -221,8 +246,7 @@ class Login extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) =>  Signup()),
+                          MaterialPageRoute(builder: (context) => Signup()),
                         );
                       },
                       child: const Text(

@@ -7,16 +7,14 @@ class MyTargets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      key: scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.menu),
+          icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
-            scaffoldKey.currentState?.openDrawer();
+            Navigator.of(context).pop();
           },
         ),
         elevation: 0,

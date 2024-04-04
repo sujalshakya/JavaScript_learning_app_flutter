@@ -10,17 +10,44 @@ class ChallengeModel {
   final String question;
   final int complexity;
   final String instruction;
+  final String id;
+  final String defaultCode;
+  final List<String> testCases;
 
-  ChallengeModel(
-      {required this.question,
-      required this.complexity,
-      required this.instruction});
+  ChallengeModel({
+    required this.question,
+    required this.complexity,
+    required this.instruction,
+    required this.id,
+    required this.defaultCode,
+    required this.testCases,
+  });
 
   factory ChallengeModel.fromJson(Map<String, dynamic> json) {
+    List<String> extractTestCases(dynamic testCasesJson) {
+      List<String> cases = [];
+      if (testCasesJson != null && testCasesJson is List) {
+        for (var testCase in testCasesJson) {
+          if (testCase is String) {
+            cases.add(testCase);
+          }
+        }
+      }
+      return cases;
+    }
+
     return ChallengeModel(
       question: json['question'],
       complexity: json['complexity'],
       instruction: json['instruction'].toString(),
+      id: json['_id'],
+      defaultCode: json['solutions'] != null && json['solutions'].isNotEmpty
+          ? json['solutions'][0]['default_code'] ?? ""
+          : "",
+      testCases: extractTestCases(
+          json['solutions'] != null && json['solutions'].isNotEmpty
+              ? json['solutions'][0]['testcases']
+              : null),
     );
   }
 }
@@ -34,6 +61,14 @@ class Challenges extends StatefulWidget {
 
 class _ChallengesState extends State<Challenges> {
   List<ChallengeModel> challenges = [];
+  String selectedFilter = 'All';
+  List<String> complexityFilters = [
+    'All',
+    'Easy',
+    'Medium',
+    'Hard',
+    'Very Hard'
+  ];
 
   @override
   void initState() {
@@ -53,9 +88,29 @@ class _ChallengesState extends State<Challenges> {
       setState(() {
         challenges = fetchedChallenges;
       });
-      print(challenges);
     } else {
       throw Exception('Failed to load challenges');
+    }
+  }
+
+  List<ChallengeModel> getFilteredChallenges() {
+    if (selectedFilter == 'All') {
+      return challenges;
+    } else {
+      return challenges.where((challenge) {
+        switch (selectedFilter) {
+          case 'Easy':
+            return challenge.complexity == 1;
+          case 'Medium':
+            return challenge.complexity == 2;
+          case 'Hard':
+            return challenge.complexity == 3;
+          case 'Very Hard':
+            return challenge.complexity == 4;
+          default:
+            return false;
+        }
+      }).toList();
     }
   }
 
@@ -174,15 +229,19 @@ class _ChallengesState extends State<Challenges> {
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: AppConstants.primaryColor)),
                     child: DropdownButton<String>(
-                      value: 'Difficulty',
-                      onChanged: (String? newValue) {},
+                      value: selectedFilter,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedFilter = newValue!;
+                        });
+                      },
                       elevation: 16,
                       isExpanded: true,
                       underline: Container(),
                       borderRadius: BorderRadius.circular(12),
                       style: const TextStyle(color: AppConstants.primaryColor),
                       dropdownColor: Colors.white,
-                      items: <String>['Difficulty', 'Easy', 'Medium', 'Hard']
+                      items: complexityFilters
                           .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
@@ -232,12 +291,11 @@ class _ChallengesState extends State<Challenges> {
               ),
               Expanded(
                 child: ListView.builder(
-                  itemCount: challenges.length,
+                  itemCount: getFilteredChallenges().length,
                   itemBuilder: (context, index) {
                     return ChallengeTab(
-                      challenge: challenges[index],
+                      challenge: getFilteredChallenges()[index],
                       index: index,
-                      instruction: challenges[index],
                     );
                   },
                 ),
@@ -253,11 +311,10 @@ class _ChallengesState extends State<Challenges> {
 class ChallengeTab extends StatelessWidget {
   final ChallengeModel challenge;
   final int index;
-  final ChallengeModel instruction;
+
   const ChallengeTab({
     required this.challenge,
     required this.index,
-    required this.instruction,
     super.key,
   });
 
@@ -328,9 +385,13 @@ class ChallengeTab extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => ChallengeDetails(
-                                  question: challenge.question,
-                                  index: index,
-                                  instruction: challenge.instruction)),
+                                    question: challenge.question,
+                                    index: index,
+                                    instruction: challenge.instruction,
+                                    id: challenge.id,
+                                    defaultCode: challenge.defaultCode,
+                                     testCases: challenge.testCases,
+                                  )),
                         );
                       },
                       style: ElevatedButton.styleFrom(

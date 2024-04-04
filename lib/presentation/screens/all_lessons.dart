@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:javascript/constants/constants.dart';
 import 'package:javascript/constants/text_style.dart';
+import 'package:javascript/presentation/screens/lesson_details.dart';
 import 'package:javascript/presentation/widgets/widebutton.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,6 +13,7 @@ class AllLessons extends StatefulWidget {
   @override
   _LessonPageState createState() => _LessonPageState();
 }
+
 class _LessonPageState extends State<AllLessons> {
   List<Map<String, dynamic>> lessons = [];
 
@@ -88,12 +90,15 @@ class _LessonPageState extends State<AllLessons> {
                       return LessonTab(
                         lessonTitle: lesson['lessonTitle'],
                         lessonIndex: lessonIndex,
+                        lessonid: lesson['id'],
                       );
                     },
                   ),
                 ),
               ),
-              SizedBox(height: 8,),
+              SizedBox(
+                height: 8,
+              ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: WideButton(
@@ -112,44 +117,51 @@ class _LessonPageState extends State<AllLessons> {
 class LessonTab extends StatelessWidget {
   final String lessonTitle;
   final int lessonIndex;
+  final String lessonid;
 
-  const LessonTab({
-    Key,
-    required this.lessonTitle,
-    required this.lessonIndex,
-  });
+  const LessonTab(
+      {Key,
+      required this.lessonTitle,
+      required this.lessonIndex,
+      required this.lessonid});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: const Color(0XFFEDEBFF)),
-            child: Center(
-              child: Text(
-                '${lessonIndex}',
-                style: TextStyle(color: AppConstants.primaryColor),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) =>  LessonDetails(lessonid:lessonid, lessonTitle: lessonTitle )));
+      },
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: const Color(0XFFEDEBFF)),
+              child: Center(
+                child: Text(
+                  '${lessonIndex}',
+                  style: TextStyle(color: AppConstants.primaryColor),
+                ),
               ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            lessonTitle,
-            style: AppTextStyles.headingStyle,
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              lessonTitle,
+              style: AppTextStyles.headingStyle,
+            ),
           ),
-        ),
-        const Spacer(),
-        Transform.rotate(
-            angle: -3.14 / 2, child: const Icon(Icons.arrow_back_ios))
-      ],
+          const Spacer(),
+          Transform.rotate(
+              angle: -3.14 / 2, child: const Icon(Icons.arrow_back_ios))
+        ],
+      ),
     );
   }
 }

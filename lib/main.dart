@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:javascript/presentation/screens/all_lessons.dart';
-import 'package:javascript/presentation/screens/games/Challenge_detail.dart';
 import 'package:javascript/presentation/screens/course.dart';
 import 'package:javascript/presentation/screens/daily_streak.dart';
+import 'package:javascript/presentation/screens/games/challenges.dart';
 import 'package:javascript/presentation/screens/games/games.dart';
 import 'package:javascript/presentation/screens/games/quiz.dart';
 import 'package:javascript/presentation/screens/games/quiz_details.dart';
@@ -19,13 +20,13 @@ import 'package:javascript/presentation/screens/login/signup.dart';
 import 'package:javascript/presentation/screens/profile/settings/buy_code_coins.dart';
 import 'package:javascript/presentation/screens/profile/settings/change_password.dart';
 import 'package:javascript/presentation/screens/profile/settings/settings.dart';
-import 'package:javascript/presentation/screens/questions.dart';
-import 'package:javascript/presentation/screens/questions_details.dart';
 import 'package:javascript/presentation/widgets/bottom_nav_bar.dart';
 import 'package:javascript/presentation/widgets/bottom_navbar_cubit.dart';
 import 'package:javascript/theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
   runApp(const MyApp());
 }
 
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: appTheme,
-            initialRoute: "all_lessons",
+            initialRoute: "login",
             routes: {
               'login': (context) => Login(),
               'signup': (context) => Signup(),
@@ -56,14 +57,13 @@ class MyApp extends StatelessWidget {
               'changepassword': (context) => const ChangePassword(),
               'buycoins': (context) => const BuyCoins(),
               'leaderboard': (context) => const Leaderboard(),
-              'challenge_details': (context) => const ChallengeDetails(),
               'all_lessons': (context) => const AllLessons(),
               'bottom': (context) => const BottomNavBar2(),
               'enterOTP': (context) => const EnterOTP(
                     email: '',
                   ),
               'javascript': (context) => const JavaScript(),
-              'questions': (context) => const Questions(),
+              'challenge': (context) => const Challenges(),
             }));
   }
 }

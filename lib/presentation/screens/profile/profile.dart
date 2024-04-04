@@ -5,10 +5,13 @@ import 'package:flutter_svg/svg.dart';
 import 'package:javascript/constants/constants.dart';
 import 'package:javascript/constants/text_style.dart';
 import 'package:javascript/presentation/screens/profile/edit_profile.dart';
+import 'package:javascript/presentation/screens/profile/leaderboard.dart';
 import 'package:javascript/presentation/screens/profile/settings/my_certificates.dart';
+import 'package:javascript/presentation/screens/profile/settings/my_targets.dart';
 import 'package:javascript/presentation/screens/profile/settings/settings.dart';
 import 'package:javascript/presentation/widgets/codecoins.dart';
 import 'package:javascript/presentation/widgets/coin.dart';
+import 'package:javascript/presentation/widgets/drawer.dart';
 
 class Profile extends StatelessWidget {
   const Profile({Key? key}) : super(key: key);
@@ -233,54 +236,63 @@ class Profile extends StatelessWidget {
                       ]),
                 ),
                 const Padding(padding: EdgeInsets.all(8.0), child: Text("Bio")),
-                Container(
-                  width: screenWidth * 0.9,
-                  height: screenHeight * 0.13,
-                  decoration: BoxDecoration(
-                      image: const DecorationImage(
-                          image: AssetImage(
-                              "assets/background/profile_leaderboard.png"),
-                          fit: BoxFit.fill),
-                      borderRadius: BorderRadius.circular(16)),
-                  child: const Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Icon(
-                                Icons.leaderboard_outlined,
-                                color: Colors.white,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const Leaderboard(),
+                        ));
+                  },
+                  child: Container(
+                    width: screenWidth * 0.9,
+                    height: screenHeight * 0.13,
+                    decoration: BoxDecoration(
+                        image: const DecorationImage(
+                            image: AssetImage(
+                                "assets/background/profile_leaderboard.png"),
+                            fit: BoxFit.fill),
+                        borderRadius: BorderRadius.circular(16)),
+                    child: const Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.leaderboard_outlined,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                            Text("Leaderboard Status",
-                                style: TextStyle(color: Colors.white))
-                          ],
+                              Text("Leaderboard Status",
+                                  style: TextStyle(color: Colors.white))
+                            ],
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Text("#56 rank",
-                                  style: TextStyle(color: Colors.white)),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Icon(
-                                Icons.arrow_forward,
-                                color: Colors.white,
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Text("#56 rank",
+                                    style: TextStyle(color: Colors.white)),
                               ),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
+                              Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.arrow_forward,
+                                  color: Colors.white,
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(
@@ -356,53 +368,59 @@ class Profile extends StatelessWidget {
                 const SizedBox(
                   height: 16,
                 ),
-                Container(
-                  width: screenWidth * 0.9,
-                  height: screenHeight * 0.14,
-                  decoration: BoxDecoration(
-                      image: const DecorationImage(
-                          image: AssetImage(
-                              "assets/background/profile_target.png"),
-                          fit: BoxFit.fill),
-                      borderRadius: BorderRadius.circular(16)),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: SvgPicture.asset(
-                                "assets/svg/target.svg",
-                                color: Colors.white,
-                                height: 25,
-                                width: 25,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MyTargets()));
+                  },
+                  child: Container(
+                    width: screenWidth * 0.9,
+                    height: screenHeight * 0.14,
+                    decoration: BoxDecoration(
+                        image: const DecorationImage(
+                            image: AssetImage(
+                                "assets/background/profile_target.png"),
+                            fit: BoxFit.fill),
+                        borderRadius: BorderRadius.circular(16)),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: SvgPicture.asset(
+                                  "assets/svg/target.svg",
+                                  color: Colors.white,
+                                  height: 25,
+                                  width: 25,
+                                ),
                               ),
-                            ),
-                            const Text("My Targets",
-                                style: TextStyle(color: Colors.white)),
-                          ],
+                              const Text("My Targets",
+                                  style: TextStyle(color: Colors.white)),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Icon(
-                                Icons.arrow_forward,
-                                color: Colors.white,
-                              ),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
+                        const SizedBox(height: 4),
+                        const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Icon(
+                                  Icons.arrow_forward,
+                                  color: Colors.white,
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(
@@ -471,6 +489,7 @@ class Profile extends StatelessWidget {
           ),
         ),
       ),
+      drawer: MyDrawer(),
     );
   }
 }

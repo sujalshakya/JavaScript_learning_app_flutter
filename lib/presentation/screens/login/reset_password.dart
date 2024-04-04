@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import 'package:javascript/presentation/screens/login/check_mail.dart';
 import 'package:javascript/presentation/screens/login/enter_otp.dart';
 
 class AuthService {

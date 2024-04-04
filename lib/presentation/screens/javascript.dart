@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:javascript/constants/constants.dart';
 import 'package:javascript/constants/text_style.dart';
 import 'package:javascript/presentation/screens/all_lessons.dart';
@@ -19,10 +19,13 @@ class JavaScript extends StatefulWidget {
 
 class _JavaScriptState extends State<JavaScript> {
   List<Map<String, dynamic>> lessons = [];
+  List<Map<String, dynamic>> reviews = [];
+
   @override
   void initState() {
     super.initState();
     fetchLessonData();
+    fetchReviewData();
   }
 
   Future<void> fetchLessonData() async {
@@ -35,7 +38,28 @@ class _JavaScriptState extends State<JavaScript> {
         lessons = List<Map<String, dynamic>>.from(lessonData);
       });
     } else {
-      throw Exception('Failed to load lesson data');
+      throw Exception(response.body);
+    }
+  }
+
+  Future<void> fetchReviewData() async {
+    var box = await Hive.openBox('SETTINGS');
+    final String? token = box.get('token');
+    final response = await http.get(
+      Uri.parse('https://api.codynn.com/api/review'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final List<dynamic> reviewData = responseData['getReviews'];
+      setState(() {
+        reviews = List<Map<String, dynamic>>.from(reviewData.take(3));
+      });
+    } else {
+      throw Exception('Failed to load review data');
     }
   }
 
@@ -378,32 +402,20 @@ class _JavaScriptState extends State<JavaScript> {
                               style: AppTextStyles.headingStyle,
                             ),
                             Spacer(),
-                            Text(
-                              "4.6",
-                              style:
-                                  TextStyle(color: Colors.yellow, fontSize: 18),
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.yellow,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.yellow,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.yellow,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.yellow,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.yellow,
-                            ),
                           ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: screenHeight * 0.6,
+                        child: ListView.builder(
+                          itemCount: reviews.length,
+                          itemBuilder: (context, index) {
+                            final review = reviews[index];
+                            return Review(
+                              reviewStar: review['reviewStar'],
+                              reviewComment: review['reviewComment'],
+                            );
+                          },
                         ),
                       ),
                     ]),
@@ -416,6 +428,92 @@ class _JavaScriptState extends State<JavaScript> {
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class Review extends StatelessWidget {
+  final String reviewComment;
+
+  final int reviewStar;
+
+  const Review({
+    super.key,
+    required this.reviewComment,
+    required this.reviewStar,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 150,
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5F5F5),
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(right: 16.0),
+                child: const CircleAvatar(
+                  radius: 20,
+                  backgroundImage: AssetImage('path_to_your_image'),
+                ),
+              ),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("name"),
+                  Text(
+                    "date",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: const Color(0xFF808080),
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  reviewStar.toString(),
+                  style: const TextStyle(color: Colors.yellow, fontSize: 18),
+                ),
+              ),
+              Row(
+                children: List.generate(
+                  5,
+                  (index) {
+                    if (index < reviewStar) {
+                      return const Icon(
+                        Icons.star,
+                        color: Colors.yellow,
+                      );
+                    } else {
+                      return const Icon(
+                        Icons.star_border,
+                        color: Colors.yellow,
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+              child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Text(reviewComment),
+              ],
+            ),
+          ))
+        ],
       ),
     );
   }

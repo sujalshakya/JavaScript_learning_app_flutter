@@ -203,7 +203,7 @@ class Leaderboard extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: screenHeight * 0.40,
+                height: screenHeight * 0.50,
                 child: SingleChildScrollView(
                   child: Column(
                     children: [

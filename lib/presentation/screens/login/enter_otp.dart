@@ -24,6 +24,34 @@ class _EnterOTPState extends State<EnterOTP> {
     super.dispose();
   }
 
+  Future<void> sendOTP(String email, String otp) async {
+    final String apiUrl = 'https://api.codynn.com/api/user/verifyPin';
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        body: {
+          'email': email,
+          'otp': otp,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('OTP sent successfully');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ChangePassword(),
+          ),
+        );
+      } else {
+        print('${response.body}. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Failed to send OTP. Error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -101,9 +129,9 @@ class _EnterOTPState extends State<EnterOTP> {
                       String otp = controllers
                           .map((controller) => controller.text)
                           .join();
-                      print(otp);
 
-                      sendOTP(otp);
+                      sendOTP(widget.email, otp);
+                      print(otp);
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
@@ -127,39 +155,5 @@ class _EnterOTPState extends State<EnterOTP> {
         ),
       ),
     );
-  }
-
-  void sendOTP(String otp) async {
-    String apiUrl = 'https://api.codynn.com/api/user/verifyPin';
-
-    Map<String, String> data = {
-      'otp': otp,
-      'email': widget.email,
-    };
-
-    String jsonData = json.encode(data);
-
-    try {
-      http.Response response = await http.post(
-        Uri.parse(apiUrl),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonData,
-      );
-
-      if (response.statusCode == 200) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const ChangePassword(),
-          ),
-        );
-      } else {
-        print('Failed to verify OTP. Status code: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error sending OTP: $error');
-    }
   }
 }
