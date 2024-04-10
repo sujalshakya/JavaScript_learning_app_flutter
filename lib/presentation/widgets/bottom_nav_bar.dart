@@ -49,7 +49,7 @@ class _BottomNavBarState extends State<BottomNavBar2> {
           Home(),
           Course(),
           Games(),
-          Profile(),
+          ProfilePage(),
         ],
         onPageChanged: (index) {
           setState(() {
@@ -71,6 +71,8 @@ class _BottomNavBarState extends State<BottomNavBar2> {
               'assets/svg/home.svg',
               height: 28,
               width: 28,
+              color:
+                  _selectedIndex == 0 ? const Color(0xFF644AFF) : Colors.black,
             ),
             label: 'Home',
           ),
@@ -79,6 +81,8 @@ class _BottomNavBarState extends State<BottomNavBar2> {
               'assets/svg/book.svg',
               height: 28,
               width: 28,
+              color:
+                  _selectedIndex == 1 ? const Color(0xFF644AFF) : Colors.black,
             ),
             label: 'Course',
           ),
@@ -91,6 +95,8 @@ class _BottomNavBarState extends State<BottomNavBar2> {
               'assets/svg/profile.svg',
               height: 28,
               width: 28,
+              color:
+                  _selectedIndex == 3 ? const Color(0xFF644AFF) : Colors.black,
             ),
             label: 'Profile',
           ),

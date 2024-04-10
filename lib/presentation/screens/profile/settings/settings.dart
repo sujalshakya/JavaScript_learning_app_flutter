@@ -8,7 +8,6 @@ import 'package:javascript/presentation/screens/profile/settings/buy_code_coins.
 import 'package:javascript/presentation/screens/profile/settings/change_password.dart';
 import 'package:javascript/presentation/screens/profile/settings/my_targets.dart';
 
-
 class Settings extends StatelessWidget {
   const Settings({super.key});
 
@@ -65,13 +64,7 @@ class Settings extends StatelessWidget {
                 child: Column(
                   children: [
                     GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const EditProfile()),
-                        );
-                      },
+                      onTap: () {},
                       child: Barbuilder(
                         leadingIcon: Icons.border_color_outlined,
                         text: "Edit profile",
@@ -146,8 +139,7 @@ class Settings extends StatelessWidget {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) =>  Login()),
+                            MaterialPageRoute(builder: (context) => Login()),
                           );
                         },
                         child: Padding(

@@ -406,7 +406,7 @@ class _JavaScriptState extends State<JavaScript> {
                         ),
                       ),
                       SizedBox(
-                        height: screenHeight * 0.6,
+                        height: screenHeight * 0.4,
                         child: ListView.builder(
                           itemCount: reviews.length,
                           itemBuilder: (context, index) {
@@ -414,6 +414,7 @@ class _JavaScriptState extends State<JavaScript> {
                             return Review(
                               reviewStar: review['reviewStar'],
                               reviewComment: review['reviewComment'],
+                              reviewId: review['_id'],
                             );
                           },
                         ),
@@ -435,6 +436,7 @@ class _JavaScriptState extends State<JavaScript> {
 
 class Review extends StatelessWidget {
   final String reviewComment;
+  final String reviewId;
 
   final int reviewStar;
 
@@ -442,78 +444,81 @@ class Review extends StatelessWidget {
     super.key,
     required this.reviewComment,
     required this.reviewStar,
+    required this.reviewId,
   });
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 150,
-      padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5),
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(right: 16.0),
-                child: const CircleAvatar(
-                  radius: 20,
-                  backgroundImage: AssetImage('path_to_your_image'),
-                ),
-              ),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("name"),
-                  Text(
-                    "date",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: const Color(0xFF808080),
-                    ),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  reviewStar.toString(),
-                  style: const TextStyle(color: Colors.yellow, fontSize: 18),
-                ),
-              ),
-              Row(
-                children: List.generate(
-                  5,
-                  (index) {
-                    if (index < reviewStar) {
-                      return const Icon(
-                        Icons.star,
-                        color: Colors.yellow,
-                      );
-                    } else {
-                      return const Icon(
-                        Icons.star_border,
-                        color: Colors.yellow,
-                      );
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-          Expanded(
-              child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        height: 150,
+        padding: const EdgeInsets.all(12.0),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF5F5F5),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Column(
+          children: [
+            Row(
               children: [
-                Text(reviewComment),
+                Container(
+                  margin: const EdgeInsets.only(right: 16.0),
+                  child: const CircleAvatar(
+                    radius: 20,
+                    backgroundImage: AssetImage('path_to_your_image'),
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "name",
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF808080),
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    reviewStar.toString(),
+                    style: const TextStyle(color: Colors.yellow, fontSize: 18),
+                  ),
+                ),
+                Row(
+                  children: List.generate(
+                    5,
+                    (index) {
+                      if (index < reviewStar) {
+                        return const Icon(
+                          Icons.star,
+                          color: Colors.yellow,
+                        );
+                      } else {
+                        return const Icon(
+                          Icons.star_border,
+                          color: Colors.yellow,
+                        );
+                      }
+                    },
+                  ),
+                ),
               ],
             ),
-          ))
-        ],
+            Expanded(
+                child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Text(reviewComment),
+                ],
+              ),
+            ))
+          ],
+        ),
       ),
     );
   }

@@ -21,7 +21,6 @@ import 'package:javascript/presentation/screens/profile/settings/buy_code_coins.
 import 'package:javascript/presentation/screens/profile/settings/change_password.dart';
 import 'package:javascript/presentation/screens/profile/settings/settings.dart';
 import 'package:javascript/presentation/widgets/bottom_nav_bar.dart';
-import 'package:javascript/presentation/widgets/bottom_navbar_cubit.dart';
 import 'package:javascript/theme.dart';
 
 void main() async {
@@ -35,35 +34,32 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) => BottomNavBarCubit(),
-        child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: appTheme,
-            initialRoute: "login",
-            routes: {
-              'login': (context) => Login(),
-              'signup': (context) => Signup(),
-              'resetpassword': (context) => ResetPassword(),
-              'course': ((context) => const Course()),
-              'dailystreak': ((context) => DailyStreak()),
-              'notification': ((context) => const Notifications()),
-              'games': (context) => const Games(),
-              'quiz': (context) => const Quiz(),
-              'profile': (context) => const Profile(),
-              'quiz_details': (context) => const QuizDetails(),
-              'editprofile': (context) => const EditProfile(),
-              'settings': (context) => const Settings(),
-              'changepassword': (context) => const ChangePassword(),
-              'buycoins': (context) => const BuyCoins(),
-              'leaderboard': (context) => const Leaderboard(),
-              'all_lessons': (context) => const AllLessons(),
-              'bottom': (context) => const BottomNavBar2(),
-              'enterOTP': (context) => const EnterOTP(
-                    email: '',
-                  ),
-              'javascript': (context) => const JavaScript(),
-              'challenge': (context) => const Challenges(),
-            }));
+    return (MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: appTheme,
+        initialRoute: "login",
+        routes: {
+          'login': (context) => Login(),
+          'signup': (context) => Signup(),
+          'resetpassword': (context) => ResetPassword(),
+          'course': ((context) => const Course()),
+          'dailystreak': ((context) => DailyStreak()),
+          'notification': ((context) => const Notifications()),
+          'games': (context) => const Games(),
+          'quiz': (context) => const Quiz(),
+          'profile': (context) => const ProfilePage(),
+          'quiz_details': (context) => const QuizDetails(),
+          'settings': (context) => const Settings(),
+          'changepassword': (context) => const ChangePassword(),
+          'buycoins': (context) => const BuyCoins(),
+          'leaderboard': (context) => const Leaderboard(),
+          'all_lessons': (context) => const AllLessons(),
+          'bottom': (context) => const BottomNavBar2(),
+          'enterOTP': (context) => const EnterOTP(
+                email: '',
+              ),
+          'javascript': (context) => const JavaScript(),
+          'challenge': (context) => const Challenges(),
+        }));
   }
 }
