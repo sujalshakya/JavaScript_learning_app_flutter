@@ -16,11 +16,27 @@ class LessonDetails extends StatefulWidget {
 }
 
 class _LessonDetailsState extends State<LessonDetails> {
-  List<Map<String, dynamic>> course = [];
+  final ScrollController _scrollController = ScrollController();
+  double _progress = 0.0;
+  List<Map<dynamic, dynamic>> course = [];
+  Offset _imageOffset = Offset.zero;
   @override
   void initState() {
     super.initState();
     fetchCourseData();
+    _scrollController.addListener(_updateProgress);
+  }
+
+  void _updateProgress() {
+    double progress = _scrollController.position.pixels /
+        _scrollController.position.maxScrollExtent;
+
+    progress = progress.clamp(0.0, 1.0);
+
+    setState(() {
+      _progress = progress;
+      _imageOffset = Offset(_progress * 350 * 0.9, 0);
+    });
   }
 
   Future<void> fetchCourseData() async {
@@ -42,7 +58,7 @@ class _LessonDetailsState extends State<LessonDetails> {
         if (response.statusCode == 200) {
           final List<dynamic> courseData = json.decode(response.body);
           setState(() {
-            course = List<Map<String, dynamic>>.from(courseData);
+            course = List<Map<dynamic, dynamic>>.from(courseData);
             box.put(lessonDataKey, courseData);
           });
         } else {
@@ -51,7 +67,7 @@ class _LessonDetailsState extends State<LessonDetails> {
       } else {
         final List<dynamic> courseData = box.get(lessonDataKey);
         setState(() {
-          course = List<Map<String, dynamic>>.from(courseData);
+          course = List<Map<dynamic, dynamic>>.from(courseData);
         });
       }
     } else {
@@ -91,12 +107,12 @@ class _LessonDetailsState extends State<LessonDetails> {
                 height: 8,
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: screenWidth * 0.1,
+                  Transform.translate(
+                    offset: _imageOffset,
+                    child: Image.asset("assets/icons/fire.png",
+                        height: 40, width: 40),
                   ),
-                  Image.asset("assets/icons/fire.png", height: 40, width: 40),
                 ],
               ),
               const SizedBox(
@@ -104,10 +120,11 @@ class _LessonDetailsState extends State<LessonDetails> {
               ),
               SizedBox(
                 width: screenWidth * 0.9,
-                child: const LinearProgressIndicator(
-                  value: 0.25,
-                  backgroundColor: Color(0x59513EDD),
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF513EDD)),
+                child: LinearProgressIndicator(
+                  value: _progress,
+                  backgroundColor: const Color(0x59513EDD),
+                  valueColor:
+                      const AlwaysStoppedAnimation<Color>(Color(0xFF513EDD)),
                 ),
               ),
               const SizedBox(
@@ -115,6 +132,7 @@ class _LessonDetailsState extends State<LessonDetails> {
               ),
               Expanded(
                 child: ListView.builder(
+                  controller: _scrollController,
                   itemCount: course.length,
                   itemBuilder: (BuildContext context, int index) {
                     final chapter = course[index];
@@ -130,20 +148,52 @@ class _LessonDetailsState extends State<LessonDetails> {
                               ...contentItem['text']['blocks']
                                   .map<Widget>((block) {
                                 if (block['type'] == 'paragraph') {
+                                  final textData = block['data'] != null &&
+                                          block['data']['text'] != null
+                                      ? block['data']['text']
+                                      : '';
+                                  if (textData.startsWith('<b>') &&
+                                      textData.endsWith('</b>')) {
+                                    final boldText = textData.substring(
+                                        3, textData.length - 4);
+                                    return ListTile(
+                                      title: Text(
+                                        boldText,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    );
+                                  } else {
+                                    return ListTile(
+                                      title: Text(textData),
+                                    );
+                                  }
+                                } else if (block['type'] == 'code') {
+                                  final codeData = block['data'] != null &&
+                                          block['data']['code'] != null
+                                      ? block['data']['code']
+                                      : '';
                                   return ListTile(
-                                    title: Text(block['data']['text']),
+                                    title: Text(codeData),
                                   );
                                 } else if (block['type'] == 'list') {
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      for (final item in block['data']['items'])
-                                        ListTile(
-                                          title: Text(item),
-                                        ),
-                                    ],
-                                  );
+                                  final List<dynamic>? items =
+                                      block['data'] != null &&
+                                              block['data']['items'] != null
+                                          ? block['data']['items']
+                                          : null;
+                                  if (items != null) {
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        for (final item in items)
+                                          ListTile(
+                                            title: Text(item),
+                                          ),
+                                      ],
+                                    );
+                                  }
                                 }
                                 return const SizedBox.shrink();
                               }).toList(),

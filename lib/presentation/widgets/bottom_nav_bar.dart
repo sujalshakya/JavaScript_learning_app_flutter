@@ -6,7 +6,8 @@ import 'package:javascript/presentation/screens/home.dart';
 import 'package:javascript/presentation/screens/profile/profile.dart';
 
 class BottomNavBar2 extends StatefulWidget {
-  const BottomNavBar2({Key? key});
+  final int selectedIndex;
+  const BottomNavBar2({Key? key, required this.selectedIndex});
 
   @override
   State<BottomNavBar2> createState() => _BottomNavBarState();
@@ -19,6 +20,8 @@ class _BottomNavBarState extends State<BottomNavBar2> {
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.selectedIndex;
+
     _pageController = PageController(initialPage: _selectedIndex);
   }
 

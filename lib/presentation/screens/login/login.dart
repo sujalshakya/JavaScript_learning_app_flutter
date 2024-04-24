@@ -56,7 +56,10 @@ class _LoginState extends State<Login> {
     if (success) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const BottomNavBar2()),
+        MaterialPageRoute(
+            builder: (context) => const BottomNavBar2(
+                  selectedIndex: 0,
+                )),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

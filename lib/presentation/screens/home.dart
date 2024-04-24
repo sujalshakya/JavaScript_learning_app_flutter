@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:javascript/presentation/screens/course.dart';
 import 'package:javascript/presentation/screens/daily_streak.dart';
+import 'package:javascript/presentation/widgets/bottom_nav_bar.dart';
 import 'package:javascript/presentation/widgets/drawer.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -120,83 +123,95 @@ class Home extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Container(
-              width: screenWidth * 0.9,
-              height: screenHeight * 0.22,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                image: const DecorationImage(
-                  image: AssetImage('assets/background/background_image1.png'),
-                  fit: BoxFit.fill,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const BottomNavBar2(selectedIndex: 1)),
+                );
+              },
+              child: Container(
+                width: screenWidth * 0.9,
+                height: screenHeight * 0.22,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  image: const DecorationImage(
+                    image:
+                        AssetImage('assets/background/background_image1.png'),
+                    fit: BoxFit.fill,
+                  ),
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(16, 16, 0, 0),
-                        child: Text(
-                          'JavaScript Course',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(0, 16, 16, 0),
-                        child: Text(
-                          '75%',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  UnconstrainedBox(
-                    child: SizedBox(
-                      width: screenWidth * 0.8,
-                      child: const LinearProgressIndicator(
-                        value: 0.75,
-                        backgroundColor: Color(0x40FFFFFF),
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: screenHeight * 0.07,
-                  ),
-                  const Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(children: [
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
-                            child: Text(
-                              "Continue",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 18),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
-                            child: Text("where you left",
-                                style: TextStyle(color: Colors.white)),
-                          )
-                        ]),
                         Padding(
-                          padding: EdgeInsets.fromLTRB(0, 8, 8, 0),
-                          child: Icon(
-                            Icons.arrow_circle_right_outlined,
-                            color: Colors.white,
-                            size: 32,
+                          padding: EdgeInsets.fromLTRB(16, 16, 0, 0),
+                          child: Text(
+                            'JavaScript Course',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                         ),
-                      ])
-                ],
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(0, 16, 16, 0),
+                          child: Text(
+                            '75%',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    UnconstrainedBox(
+                      child: SizedBox(
+                        width: screenWidth * 0.8,
+                        child: const LinearProgressIndicator(
+                          value: 0.75,
+                          backgroundColor: Color(0x40FFFFFF),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: screenHeight * 0.07,
+                    ),
+                    const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(children: [
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
+                              child: Text(
+                                "Continue",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 18),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+                              child: Text("where you left",
+                                  style: TextStyle(color: Colors.white)),
+                            )
+                          ]),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0, 8, 8, 0),
+                            child: Icon(
+                              Icons.arrow_circle_right_outlined,
+                              color: Colors.white,
+                              size: 32,
+                            ),
+                          ),
+                        ])
+                  ],
+                ),
               ),
             ),
             SizedBox(

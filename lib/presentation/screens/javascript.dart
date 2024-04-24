@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:javascript/constants/constants.dart';
 import 'package:javascript/constants/text_style.dart';
 import 'package:javascript/presentation/screens/all_lessons.dart';
+import 'package:javascript/presentation/screens/lesson_details.dart';
 import 'package:javascript/presentation/widgets/codecoins.dart';
 import 'package:javascript/presentation/widgets/widebutton.dart';
 
@@ -368,6 +369,7 @@ class _JavaScriptState extends State<JavaScript> {
                               return LessonTab(
                                 lessonTitle: lesson['lessonTitle'],
                                 lessonIndex: lessonIndex,
+                                lessonid: lesson['id'],
                               );
                             },
                           ),
@@ -527,45 +529,54 @@ class Review extends StatelessWidget {
 class LessonTab extends StatelessWidget {
   final String lessonTitle;
   final int lessonIndex;
+  final String lessonid;
 
-  const LessonTab({
-    super.key,
-    Key,
-    required this.lessonTitle,
-    required this.lessonIndex,
-  });
+  const LessonTab(
+      {Key,
+      required this.lessonTitle,
+      required this.lessonIndex,
+      required this.lessonid});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: const Color(0XFFEDEBFF)),
-            child: Center(
-              child: Text(
-                '${lessonIndex}',
-                style: const TextStyle(color: AppConstants.primaryColor),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => LessonDetails(
+                    lessonid: lessonid, lessonTitle: lessonTitle)));
+      },
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: const Color(0XFFEDEBFF)),
+              child: Center(
+                child: Text(
+                  '${lessonIndex}',
+                  style: const TextStyle(color: AppConstants.primaryColor),
+                ),
               ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            lessonTitle,
-            style: AppTextStyles.headingStyle,
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              lessonTitle,
+              style: AppTextStyles.headingStyle,
+            ),
           ),
-        ),
-        const Spacer(),
-        Transform.rotate(
-            angle: -3.14 / 2, child: const Icon(Icons.arrow_back_ios))
-      ],
+          const Spacer(),
+          Transform.rotate(
+              angle: -3.14 / 2, child: const Icon(Icons.arrow_back_ios))
+        ],
+      ),
     );
   }
 }

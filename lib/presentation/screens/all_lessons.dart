@@ -96,7 +96,7 @@ class _LessonPageState extends State<AllLessons> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8,
               ),
               Padding(
@@ -145,7 +145,7 @@ class LessonTab extends StatelessWidget {
               child: Center(
                 child: Text(
                   '${lessonIndex}',
-                  style: TextStyle(color: AppConstants.primaryColor),
+                  style: const TextStyle(color: AppConstants.primaryColor),
                 ),
               ),
             ),

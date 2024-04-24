@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:javascript/presentation/screens/login/login.dart';
+import 'package:javascript/presentation/screens/notifications.dart';
+import 'package:javascript/presentation/screens/profile/leaderboard.dart';
+import 'package:javascript/presentation/screens/profile/settings/buy_code_coins.dart';
+import 'package:javascript/presentation/screens/profile/settings/my_certificates.dart';
+import 'package:javascript/presentation/screens/profile/settings/my_targets.dart';
+import 'package:javascript/presentation/screens/profile/settings/settings.dart';
+import 'package:javascript/presentation/widgets/bottom_nav_bar.dart';
+import 'package:hive/hive.dart';
 
 class MyDrawer extends StatelessWidget {
   MyDrawer({Key? key}) : super(key: key);
+  void navigateToScreen(BuildContext context, Widget screen) {
+    Navigator.pop(context);
+    Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
+  }
 
   final List<Map<String, dynamic>> drawerItems = [
     {
@@ -12,7 +25,8 @@ class MyDrawer extends StatelessWidget {
         width: 24,
         color: Colors.white,
       ),
-      'title': 'Home'
+      'title': 'Home',
+      'screen': const BottomNavBar2(selectedIndex: 0)
     },
     {
       'icon': SvgPicture.asset(
@@ -21,9 +35,14 @@ class MyDrawer extends StatelessWidget {
         width: 24,
         color: Colors.white,
       ),
-      'title': 'Profile'
+      'title': 'Profile',
+      'screen': const BottomNavBar2(selectedIndex: 3)
     },
-    {'icon': Icons.notifications_outlined, 'title': 'Notifications'},
+    {
+      'icon': Icons.notifications_outlined,
+      'title': 'Notifications',
+      'screen': const Notifications()
+    },
     {
       'icon': SvgPicture.asset(
         'assets/svg/book.svg',
@@ -31,10 +50,19 @@ class MyDrawer extends StatelessWidget {
         width: 24,
         color: Colors.white,
       ),
-      'title': 'Courses'
+      'title': 'Courses',
+      'screen': const BottomNavBar2(selectedIndex: 1)
     },
-    {'icon': Icons.quiz_outlined, 'title': 'Code Questions'},
-    {'icon': Icons.extension_outlined, 'title': 'Games'},
+    {
+      'icon': Icons.quiz_outlined,
+      'title': 'Code Questions',
+      'screen': const BottomNavBar2(selectedIndex: 2)
+    },
+    {
+      'icon': Icons.extension_outlined,
+      'title': 'Games',
+      'screen': const BottomNavBar2(selectedIndex: 2)
+    },
     {
       'icon': SvgPicture.asset(
         "assets/svg/graduation.svg",
@@ -42,7 +70,8 @@ class MyDrawer extends StatelessWidget {
         height: 24,
         width: 24,
       ),
-      'title': 'My Certificates'
+      'title': 'My Certificates',
+      'screen': const MyCertificates()
     },
     {
       'icon': SvgPicture.asset(
@@ -51,9 +80,14 @@ class MyDrawer extends StatelessWidget {
         height: 24,
         width: 24,
       ),
-      'title': 'My Targets'
+      'title': 'My Targets',
+      'screen': const Target()
     },
-    {'icon': Icons.leaderboard_outlined, 'title': 'Leaderboard'},
+    {
+      'icon': Icons.leaderboard_outlined,
+      'title': 'Leaderboard',
+      'screen': const Leaderboard()
+    },
     {
       'icon': SvgPicture.asset(
         'assets/svg/database.svg',
@@ -61,10 +95,19 @@ class MyDrawer extends StatelessWidget {
         width: 24,
         color: Colors.white,
       ),
-      'title': 'Buy code Coins'
+      'title': 'Buy code Coins',
+      'screen': const BuyCoins()
     },
-    {'icon': Icons.settings_outlined, 'title': 'Settings'},
-    {'icon': Icons.ios_share, 'title': 'Logout'},
+    {
+      'icon': Icons.settings_outlined,
+      'title': 'Settings',
+      'screen': const Settings()
+    },
+    {
+      'icon': Icons.ios_share,
+      'title': 'Logout',
+      'screen': Login(),
+    },
   ];
 
   @override
@@ -117,28 +160,32 @@ class MyDrawer extends StatelessWidget {
                         ),
                       ),
                       onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(context, drawerItems[index]['route']);
+                        navigateToScreen(context, drawerItems[index]['screen']);
                       },
                     );
                   },
                 ),
               ),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 60,
-                  ),
-                  Icon(
-                    Icons.close,
-                    color: Colors.white,
-                  ),
-                  Text(
-                    "Close",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  )
-                ],
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 60,
+                    ),
+                    Icon(
+                      Icons.close,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      "Close",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    )
+                  ],
+                ),
               ),
               const SizedBox(
                 height: 80,

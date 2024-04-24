@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:javascript/presentation/screens/profile/settings/change_password.dart';
+import 'package:otp_pin_field/otp_pin_field.dart';
 
 class EnterOTP extends StatefulWidget {
   final String email;
@@ -9,30 +10,26 @@ class EnterOTP extends StatefulWidget {
   const EnterOTP({Key? key, required this.email}) : super(key: key);
 
   @override
-  _EnterOTPState createState() => _EnterOTPState();
+  EnterOTPState createState() => EnterOTPState();
 }
 
-class _EnterOTPState extends State<EnterOTP> {
-  List<TextEditingController> controllers =
-      List.generate(6, (_) => TextEditingController());
+class EnterOTPState extends State<EnterOTP> {
+  String otp = '';
 
   @override
   void dispose() {
-    for (var controller in controllers) {
-      controller.dispose();
-    }
     super.dispose();
   }
 
   Future<void> sendOTP(String email, String otp) async {
-    final String apiUrl = 'https://api.codynn.com/api/user/verifyPin';
+    const String apiUrl = 'https://api.codynn.com/api/user/verifyPin';
 
     try {
       final response = await http.post(
         Uri.parse(apiUrl),
         body: {
           'email': email,
-          'otp': otp,
+          'pin': otp,
         },
       );
 
@@ -97,39 +94,33 @@ class _EnterOTPState extends State<EnterOTP> {
                     )),
                 SizedBox(height: screenHeight * 0.03),
                 const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(
-                    6,
-                    (index) => Container(
-                      width: screenWidth * 0.12,
-                      height: screenHeight * 0.081,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(32),
-                      ),
-                      child: TextField(
-                        controller: controllers[index],
-                        keyboardType: TextInputType.number,
-                        maxLength: 1,
-                        textAlign: TextAlign.center,
-                        decoration: const InputDecoration(
-                          counter: Offstage(),
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
+                OtpPinField(
+                    autoFillEnable: false,
+                    textInputAction: TextInputAction.done,
+                    otpPinFieldStyle: OtpPinFieldStyle(
+                      defaultFieldBorderColor: Colors.black,
+                      filledFieldBorderColor: Theme.of(context).primaryColor,
                     ),
-                  ),
-                ),
+                    onSubmit: (text) {},
+                    onChange: (text) {
+                      setState(() {
+                        otp = text;
+                      });
+                    },
+                    onCodeChanged: (code) {},
+                    maxLength: 6,
+                    showCursor: true,
+                    showDefaultKeyboard: true,
+                    cursorWidth: 3,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    otpPinFieldDecoration:
+                        OtpPinFieldDecoration.defaultPinBoxDecoration),
                 SizedBox(height: screenHeight * 0.05),
                 SizedBox(
                   width: screenWidth * 0.9,
                   height: screenHeight * 0.07,
                   child: ElevatedButton(
                     onPressed: () {
-                      String otp = controllers
-                          .map((controller) => controller.text)
-                          .join();
-
                       sendOTP(widget.email, otp);
                       print(otp);
                     },
