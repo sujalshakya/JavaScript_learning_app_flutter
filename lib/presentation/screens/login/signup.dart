@@ -45,7 +45,6 @@ class _SignupState extends State<Signup> {
   bool _isConfirmPasswordVisible = false;
 
   final TextEditingController emailController = TextEditingController();
-
   final TextEditingController passwordController = TextEditingController();
 
   final TextEditingController confirmPasswordController =
@@ -73,6 +72,7 @@ class _SignupState extends State<Signup> {
         MaterialPageRoute(builder: (context) => Login()),
       );
     } else {
+      print(http.Response);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Signup failed. Please try again.'),
       ));

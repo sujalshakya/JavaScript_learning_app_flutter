@@ -1,48 +1,30 @@
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:javascript/constants/constants.dart';
 import 'package:javascript/presentation/screens/questions/question_model.dart';
 import 'package:javascript/presentation/screens/questions/questions_details.dart';
+import 'package:http/http.dart' as http;
 
-class Questions extends StatefulWidget {
-  final String category;
-
-  const Questions({
-    Key? key,
-    required this.category,
-  }) : super(key: key);
+class Favorite extends StatefulWidget {
+  const Favorite({super.key});
 
   @override
-  _QuestionTabState createState() => _QuestionTabState();
+  State<Favorite> createState() => _FavoriteState();
 }
 
-class _QuestionTabState extends State<Questions> {
-  late List<QuestionModel> questions = [];
-  late List<QuestionModel> filteredQuestions = [];
+class _FavoriteState extends State<Favorite> {
+  late List<QuestionModel> favorite = [];
 
   Timer? _debounce;
-
   @override
   void initState() {
     super.initState();
-    fetchQuestions(widget.category);
     _search('');
   }
 
-  void _search(String query) {
-    setState(() {
-      if (query.isEmpty) {
-        filteredQuestions = questions;
-      } else {
-        filteredQuestions = questions.where((question) {
-          return question.question.toLowerCase().contains(query.toLowerCase());
-        }).toList();
-      }
-    });
-  }
+  void _search(String query) {}
 
   Future<void> fetchQuestions(String category) async {
     try {
@@ -63,7 +45,7 @@ class _QuestionTabState extends State<Questions> {
               id: data['id'],
             );
             setState(() {
-              questions.add(question);
+              favorite.add(question);
             });
           }
         } else {
@@ -97,7 +79,7 @@ class _QuestionTabState extends State<Questions> {
           color: Color(0xFF644AFF),
         ),
         title: const Text(
-          "Questions",
+          "Favorites",
           style: TextStyle(color: Colors.black, fontSize: 16),
         ),
         centerTitle: true,
@@ -147,17 +129,17 @@ class _QuestionTabState extends State<Questions> {
                 SizedBox(
                   height: screenHeight * 0.8,
                   child: ListView.builder(
-                    itemCount: filteredQuestions.length,
+                    itemCount: favorite.length,
                     itemBuilder: (context, index) {
-                      final question = filteredQuestions[index];
+                      final question = favorite[index];
                       return QuestionTab(
-                        index: index,
-                        question: question.question,
-                        algorithm: question.algorithm,
-                        explanation: question.explanation,
-                        flowchart: question.flowchart,
-                        code: question.code,
-                      );
+                          index: index,
+                          question: question.question,
+                          algorithm: question.algorithm,
+                          explanation: question.explanation,
+                          flowchart: question.flowchart,
+                          code: question.code,
+                          id: question.id);
                     },
                   ),
                 ),
@@ -187,7 +169,7 @@ class QuestionTab extends StatelessWidget {
     this.code,
     required this.index,
     this.explanation,
-    this. id,
+    this.id,
   }) : super(key: key);
 
   @override
@@ -198,14 +180,13 @@ class QuestionTab extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => QuestionDetails(
-              question: question,
-              algorithm: algorithm,
-              index: index,
-              explanation: explanation,
-              flowchart: flowchart,
-              code: code,
-              id: id,
-            ),
+                question: question,
+                algorithm: algorithm,
+                index: index,
+                explanation: explanation,
+                flowchart: flowchart,
+                code: code,
+                id: id),
           ),
         );
       },

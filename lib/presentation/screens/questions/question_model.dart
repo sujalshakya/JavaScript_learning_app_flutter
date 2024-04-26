@@ -1,23 +1,19 @@
-import 'package:hive/hive.dart';
-
-part 'question_model.g.dart';
-
-@HiveType(typeId: 0)
-class QuestionModel extends HiveObject {
-  @HiveField(0)
+class QuestionModel {
   late String question;
-
-  @HiveField(1)
   late String algorithm;
-
-  @HiveField(2)
   late String explanation;
-
-  @HiveField(3)
   late String flowchart;
-
-  @HiveField(4)
   late String code;
+  late String id;
+
+  QuestionModel({
+    required this.question,
+    required this.algorithm,
+    required this.explanation,
+    required this.flowchart,
+    required this.code,
+    required this.id,
+  });
 
   Map<String, dynamic> toJson() {
     return {
@@ -26,15 +22,18 @@ class QuestionModel extends HiveObject {
       'explanation': explanation,
       'flowchart': flowchart,
       'code': code,
+      'id': id,
     };
   }
-}
 
-QuestionModel questionModelFromJson(Map<String, dynamic> json) {
-  return QuestionModel()
-    ..question = json['question']
-    ..algorithm = json['algorithm']
-    ..explanation = json['explanation']
-    ..flowchart = json['flowchart']
-    ..code = json['code'];
+  factory QuestionModel.fromJson(Map<String, dynamic> json) {
+    return QuestionModel(
+      question: json['question'],
+      algorithm: json['algorithm'],
+      explanation: json['explanation'],
+      flowchart: json['flowchart'],
+      code: json['code'],
+      id: json['id'],
+    );
+  }
 }

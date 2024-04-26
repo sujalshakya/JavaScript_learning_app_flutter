@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:javascript/presentation/screens/all_lessons.dart';
+import 'package:javascript/presentation/screens/lessons/all_lessons.dart';
 import 'package:javascript/presentation/screens/course.dart';
 import 'package:javascript/presentation/screens/daily_streak.dart';
 import 'package:javascript/presentation/screens/games/challenges.dart';
@@ -18,7 +18,6 @@ import 'package:javascript/presentation/screens/login/signup.dart';
 import 'package:javascript/presentation/screens/profile/settings/buy_code_coins.dart';
 import 'package:javascript/presentation/screens/profile/settings/change_password.dart';
 import 'package:javascript/presentation/screens/profile/settings/settings.dart';
-import 'package:javascript/presentation/screens/questions/question_model.dart';
 import 'package:javascript/presentation/screens/splash.dart';
 import 'package:javascript/presentation/widgets/bottom_nav_bar.dart';
 import 'package:javascript/theme.dart';
@@ -26,7 +25,6 @@ import 'package:javascript/theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  Hive.registerAdapter(QuestionModelAdapter());
 
   runApp(const MyApp());
 }
@@ -39,8 +37,9 @@ class MyApp extends StatelessWidget {
     return (MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: appTheme,
-        initialRoute: "splash",
+        initialRoute: "bottomnav",
         routes: {
+          'bottomnav': (context) => BottomNavBar2(selectedIndex: 0),
           'login': (context) => Login(),
           'signup': (context) => Signup(),
           'resetpassword': (context) => ResetPassword(),

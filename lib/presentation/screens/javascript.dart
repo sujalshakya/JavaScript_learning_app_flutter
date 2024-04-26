@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:javascript/constants/constants.dart';
 import 'package:javascript/constants/text_style.dart';
-import 'package:javascript/presentation/screens/all_lessons.dart';
-import 'package:javascript/presentation/screens/lesson_details.dart';
+import 'package:javascript/presentation/screens/lessons/all_lessons.dart';
+import 'package:javascript/presentation/screens/lessons/lesson_details.dart';
 import 'package:javascript/presentation/widgets/codecoins.dart';
 import 'package:javascript/presentation/widgets/widebutton.dart';
 
@@ -470,12 +470,12 @@ class Review extends StatelessWidget {
                     backgroundImage: AssetImage('path_to_your_image'),
                   ),
                 ),
-                Column(
+                const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       "name",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: Color(0xFF808080),
                       ),
@@ -559,7 +559,7 @@ class LessonTab extends StatelessWidget {
                   color: const Color(0XFFEDEBFF)),
               child: Center(
                 child: Text(
-                  '${lessonIndex}',
+                  '$lessonIndex',
                   style: const TextStyle(color: AppConstants.primaryColor),
                 ),
               ),
