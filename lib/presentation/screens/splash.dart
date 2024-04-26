@@ -22,7 +22,10 @@ class _SplashScreenState extends State<SplashScreen> {
     if (box.get('token') != null) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const BottomNavBar2(selectedIndex: 1,)),
+        MaterialPageRoute(
+            builder: (context) => const BottomNavBar2(
+                  selectedIndex: 0,
+                )),
       );
     } else {
       Navigator.pushReplacementNamed(context, '/login');

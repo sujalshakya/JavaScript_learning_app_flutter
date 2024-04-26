@@ -83,7 +83,6 @@ class _QuestionDetailsState extends State<QuestionDetails> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         widget.question ?? '',
-                        style: AppTextStyles.headingStyle,
                       ),
                     ),
                   ),
@@ -224,7 +223,7 @@ class _QuestionDetailsState extends State<QuestionDetails> {
                       children: [
                         Container(
                           width: screenWidth,
-                          height: screenHeight * 0.5,
+                          height: screenHeight * 0.7,
                           decoration: BoxDecoration(
                               color: const Color(0XFF333F44),
                               borderRadius: BorderRadius.circular(12)),
@@ -276,31 +275,31 @@ class _QuestionDetailsState extends State<QuestionDetails> {
                         const SizedBox(
                           height: 8,
                         ),
-                        Container(
-                          width: screenWidth,
-                          height: screenHeight * 0.5,
-                          decoration: BoxDecoration(
-                              color: const Color(0XFF333F44),
-                              borderRadius: BorderRadius.circular(12)),
-                          child: const Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 8),
-                                    child: Text(
-                                      "Output:",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 16),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Divider(),
-                            ],
-                          ),
-                        ),
+                        // Container(
+                        //   width: screenWidth,
+                        //   height: screenHeight * 0.5,
+                        //   decoration: BoxDecoration(
+                        //       color: const Color(0XFF333F44),
+                        //       borderRadius: BorderRadius.circular(12)),
+                        //   child: const Column(
+                        //     children: [
+                        //       Row(
+                        //         children: [
+                        //           Padding(
+                        //             padding: EdgeInsets.symmetric(
+                        //                 horizontal: 16, vertical: 8),
+                        //             child: Text(
+                        //               "Output:",
+                        //               style: TextStyle(
+                        //                   color: Colors.white, fontSize: 16),
+                        //             ),
+                        //           ),
+                        //         ],
+                        //       ),
+                        //       Divider(),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

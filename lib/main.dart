@@ -18,6 +18,7 @@ import 'package:javascript/presentation/screens/login/signup.dart';
 import 'package:javascript/presentation/screens/profile/settings/buy_code_coins.dart';
 import 'package:javascript/presentation/screens/profile/settings/change_password.dart';
 import 'package:javascript/presentation/screens/profile/settings/settings.dart';
+import 'package:javascript/presentation/screens/questions/question_model.dart';
 import 'package:javascript/presentation/screens/splash.dart';
 import 'package:javascript/presentation/widgets/bottom_nav_bar.dart';
 import 'package:javascript/theme.dart';
@@ -25,6 +26,8 @@ import 'package:javascript/theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+  Hive.registerAdapter(QuestionModelAdapter());
+
   runApp(const MyApp());
 }
 

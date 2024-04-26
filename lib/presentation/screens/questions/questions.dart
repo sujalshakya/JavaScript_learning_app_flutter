@@ -1,74 +1,78 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:javascript/constants/constants.dart';
-import 'package:javascript/constants/text_style.dart';
 import 'package:http/http.dart' as http;
+import 'package:javascript/constants/constants.dart';
 import 'package:javascript/presentation/screens/questions/question_model.dart';
 import 'package:javascript/presentation/screens/questions/questions_details.dart';
-import 'package:path_provider/path_provider.dart' as path_provider;
 
 class Questions extends StatefulWidget {
-  const Questions({super.key});
+  final String category;
+
+  const Questions({
+    Key? key,
+    required this.category,
+  }) : super(key: key);
 
   @override
   _QuestionTabState createState() => _QuestionTabState();
 }
 
 class _QuestionTabState extends State<Questions> {
-  late Box<QuestionModel> questionBox;
+  late List<QuestionModel> questions = [];
+  late List<QuestionModel> filteredQuestions = [];
 
-  late List<QuestionModel> questions;
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
-    _initHive();
-    fetchQuestions();
+    fetchQuestions(widget.category);
+    _search('');
   }
 
-  Future<void> _initHive() async {
-    final appDocumentDirectory =
-        await path_provider.getApplicationDocumentsDirectory();
-    Hive.init(appDocumentDirectory.path);
-    Hive.registerAdapter<QuestionModel>(QuestionModelAdapter());
-    questionBox = await Hive.openBox<QuestionModel>('questions');
+  void _search(String query) {
     setState(() {
-      questions = questionBox.values.toList();
+      if (query.isEmpty) {
+        filteredQuestions = questions;
+      } else {
+        filteredQuestions = questions.where((question) {
+          return question.question.toLowerCase().contains(query.toLowerCase());
+        }).toList();
+      }
     });
   }
 
-  Future<void> fetchQuestions() async {
-    if (questionBox.isEmpty) {
-      try {
-        final response = await http.get(Uri.parse(
-            'https://api.codynn.com/api/question?difficulty=easy&category=Basic&language=javascript&page=1&limit=10&search=number'));
+  Future<void> fetchQuestions(String category) async {
+    try {
+      final response = await http.get(Uri.parse(
+          'https://api.codynn.com/api/question?category=$category&language=javascript&page=1&limit=100'));
 
-        if (response.statusCode == 200) {
-          final Map<String, dynamic> responseData = json.decode(response.body);
-
-          if (responseData.containsKey('questions')) {
-            final List<dynamic> questionsData = responseData['questions'];
-            for (var data in questionsData) {
-              final question = QuestionModel()
-                ..question = data['question']
-                ..algorithm = data['algorithm']
-                ..explanation = data['solutions'][0]['explanation']
-                ..flowchart = data['flowchart']
-                ..code = data['solutions'][0]['code'];
-              questionBox.add(question);
-            }
-          } else {
-            print(
-                'Invalid response format: Questions not found in response data');
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        if (responseData.containsKey('questions')) {
+          final List<dynamic> questionsData = responseData['questions'];
+          for (var data in questionsData) {
+            final question = QuestionModel()
+              ..question = data['question']
+              ..algorithm = data['algorithm']
+              ..explanation = data['solutions'][0]['explanation']
+              ..flowchart = data['flowchart']
+              ..code = data['solutions'][0]['code'];
+            setState(() {
+              questions.add(question);
+            });
           }
         } else {
-          print('Failed to fetch questions: ${response.statusCode}');
+          print(
+              'Invalid response format: Questions not found in response data');
         }
-      } catch (e) {
-        print('Error fetching questions: $e');
+      } else {
+        print('Failed to fetch questions: ${response.statusCode}');
       }
+    } catch (e) {
+      print('Error fetching questions: $e');
     }
   }
 
@@ -96,96 +100,54 @@ class _QuestionTabState extends State<Questions> {
         ),
         centerTitle: true,
       ),
-      body: Center(
-        child: SizedBox(
-          width: screenWidth * 0.9,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: const Color(0XFFF5F5F5),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Row(children: [
-                    Icon(Icons.search),
-                    Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text("Search"),
-                    ),
-                    Spacer(),
-                    Icon(Icons.tune),
-                  ]),
-                ),
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Padding(
+      body: SizedBox(
+        width: screenWidth,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12.0, 0, 12.0, 0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(24),
-                                  color: AppConstants.primaryColor),
-                              child: const Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 24, vertical: 8),
-                                child: Text(
-                                  "Function",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              )),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                              color: const Color(0XFFF5F5F5),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 8),
-                              child: Text(
-                                "File Handling",
-                                style: AppTextStyles.headingStyle,
-                              ),
+                  child: Container(
+                    height: 60,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      color: const Color(0XFFF5F5F5),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        onChanged: (value) {
+                          if (_debounce?.isActive ?? false) _debounce?.cancel();
+                          _debounce =
+                              Timer(const Duration(milliseconds: 500), () {
+                            _search(value);
+                          });
+                        },
+                        decoration: const InputDecoration(
+                          hintText: 'Search',
+                          border: InputBorder.none,
+                          icon: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.search,
+                              color: AppConstants.primaryColor,
                             ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(24),
-                                color: const Color(0XFFF5F5F5),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 24, vertical: 8),
-                                child: Text(
-                                  "Decision Making",
-                                  style: AppTextStyles.headingStyle,
-                                ),
-                              )),
-                        ),
-                      ]),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: screenHeight * 0.7,
-                child: SizedBox(
+                SizedBox(
+                  height: screenHeight * 0.8,
                   child: ListView.builder(
-                    itemCount: questions.length,
+                    itemCount: filteredQuestions.length,
                     itemBuilder: (context, index) {
-                      final question = questions[index];
+                      final question = filteredQuestions[index];
                       return QuestionTab(
                         index: index,
                         question: question.question,
@@ -197,8 +159,8 @@ class _QuestionTabState extends State<Questions> {
                     },
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -260,7 +222,7 @@ class QuestionTab extends StatelessWidget {
                   child: Center(
                     child: Text(
                       '${index + 1}',
-                      style: const TextStyle(color: AppConstants.primaryColor),
+                      style: const TextStyle(color: Color(0xFF644AFF)),
                     ),
                   ),
                 ),
@@ -270,7 +232,7 @@ class QuestionTab extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     question!,
-                    style: AppTextStyles.headingStyle,
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ),
               ),

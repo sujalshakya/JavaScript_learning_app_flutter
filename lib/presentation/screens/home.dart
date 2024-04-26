@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:javascript/presentation/screens/course.dart';
 import 'package:javascript/presentation/screens/daily_streak.dart';
+import 'package:javascript/presentation/screens/questions/questions.dart';
 import 'package:javascript/presentation/widgets/bottom_nav_bar.dart';
 import 'package:javascript/presentation/widgets/drawer.dart';
 import 'package:iconsax/iconsax.dart';
+
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
@@ -241,35 +241,71 @@ class Home extends StatelessWidget {
                     Column(
                       children: [
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Questions(category: "Series")));
+                          },
                           child: const Card(text: "Series"),
                         ),
                         GestureDetector(
-                          onTap: () {},
-                          child: const Card(text: "File Handling"),
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Questions(
+                                        category: "Numerical")));
+                          },
+                          child: const Card(text: "Numerical"),
                         )
                       ],
                     ),
                     Column(
                       children: [
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Questions(category: "Pattern")));
+                          },
                           child: const Card(text: "Pattern"),
                         ),
                         GestureDetector(
-                          onTap: () {},
-                          child: const Card(text: "Library Functions"),
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Questions(
+                                        category: "Conversion")));
+                          },
+                          child: const Card(text: "Conversion"),
                         ),
                       ],
                     ),
                     Column(
                       children: [
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Questions(category: "Basic")));
+                          },
                           child: const Card(text: "Basic Programs"),
                         ),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Questions(category: "Loop")));
+                          },
                           child: const Card(text: "Looping"),
                         ),
                       ],
@@ -277,12 +313,24 @@ class Home extends StatelessWidget {
                     Column(
                       children: [
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Questions(
+                                        category: "Conditional")));
+                          },
                           child: const Card(text: "Conditional Statement"),
                         ),
                         GestureDetector(
-                          onTap: () {},
-                          child: const Card(text: "Array"),
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const Questions(
+                                        category: "String Manipulation")));
+                          },
+                          child: const Card(text: "String Manipulation"),
                         ),
                       ],
                     ),
