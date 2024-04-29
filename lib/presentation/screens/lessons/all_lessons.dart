@@ -1,11 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:javascript/constants/constants.dart';
 import 'package:javascript/constants/text_style.dart';
 import 'package:javascript/presentation/screens/lessons/lesson_details.dart';
-import 'package:javascript/presentation/screens/lessons/lesson_model.dart';
 import 'package:javascript/presentation/widgets/widebutton.dart';
 import 'package:http/http.dart' as http;
 
@@ -31,17 +29,6 @@ class _LessonPageState extends State<AllLessons> {
 
     if (response.statusCode == 200) {
       final List<dynamic> lessonData = json.decode(response.body);
-      final lessonsBox = await Hive.openBox('lessonsBox');
-      lessonsBox.clear();
-      for (var lesson in lessonData) {
-        final lessonModel = LessonModel(
-          lessonId: lesson['id'],
-          lessonTitle: lesson['lessonTitle'],
-          lessonIndex: lesson['index'],
-        );
-        lessonsBox.add(lessonModel);
-      }
-
       setState(() {
         lessons = List<Map<String, dynamic>>.from(lessonData);
       });

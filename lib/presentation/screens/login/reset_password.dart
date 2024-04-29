@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import 'package:javascript/presentation/screens/login/enter_otp.dart';
+import 'package:javascript/presentation/screens/login/forget_passsword_otp.dart';
 
 class AuthService {
   static const String baseUrl = 'https://api.codynn.com/api';

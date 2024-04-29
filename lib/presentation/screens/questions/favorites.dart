@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:hive/hive.dart';
 import 'package:javascript/constants/constants.dart';
 import 'package:javascript/presentation/screens/questions/question_model.dart';
 import 'package:javascript/presentation/screens/questions/questions_details.dart';
@@ -15,21 +17,75 @@ class Favorite extends StatefulWidget {
 }
 
 class _FavoriteState extends State<Favorite> {
-  late List<QuestionModel> favorite = [];
+  List<String> favoriteIds = [];
+  late List<QuestionModel> questions = [];
+  dynamic response;
 
   Timer? _debounce;
   @override
   void initState() {
     super.initState();
-    _search('');
+    getFavorite();
+    fetchQuestions();
   }
 
-  void _search(String query) {}
+  void deleteFavorite(String questionId) async {
+    var box = await Hive.openBox('SETTINGS');
+    final String? token = box.get('token');
+    print(questionId);
 
-  Future<void> fetchQuestions(String category) async {
+    http.Response httpResponse =
+        await http.delete(Uri.parse('https://api.codynn.com/api/favourites'),
+            headers: <String, String>{
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode(
+              <String, String>{"question": questionId},
+            ));
+    int statusCode = httpResponse.statusCode;
+    print('Response status code: $statusCode');
+    setState(() {
+      if (httpResponse.statusCode == 200) {
+        setState(() {
+          favoriteIds.remove(questionId);
+        });
+        const SnackBar(content: Text("deleted"));
+      } else {
+        print(response);
+      }
+    });
+  }
+
+  void getFavorite() async {
+    var box = await Hive.openBox('SETTINGS');
+    final String? token = box.get('token');
+
+    http.Response httpResponse = await http.get(
+      Uri.parse('https://api.codynn.com/api/favourites'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+    print(token);
+
+    setState(() {
+      if (httpResponse.statusCode == 200) {
+        var data = jsonDecode(httpResponse.body);
+        List<dynamic> questions = data['UserFavourites']['question'];
+        favoriteIds = questions.map((q) => q['id'].toString()).toList();
+        print('Favorite question IDs: $favoriteIds');
+      } else {
+        print('Failed to fetch favorite questions: ${httpResponse.body}');
+      }
+    });
+  }
+
+  Future<void> fetchQuestions() async {
     try {
       final response = await http.get(Uri.parse(
-          'https://api.codynn.com/api/question?category=$category&language=javascript&page=1&limit=100'));
+          'https://api.codynn.com/api/question?language=javascript&limit=1000'));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
@@ -44,9 +100,11 @@ class _FavoriteState extends State<Favorite> {
               code: data['solutions'][0]['code'],
               id: data['id'],
             );
-            setState(() {
-              favorite.add(question);
-            });
+            if (question.id != null) {
+              setState(() {
+                questions.add(question);
+              });
+            }
           }
         } else {
           print(
@@ -93,56 +151,39 @@ class _FavoriteState extends State<Favorite> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(24),
-                      color: const Color(0XFFF5F5F5),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        onChanged: (value) {
-                          if (_debounce?.isActive ?? false) _debounce?.cancel();
-                          _debounce =
-                              Timer(const Duration(milliseconds: 500), () {
-                            _search(value);
-                          });
-                        },
-                        decoration: const InputDecoration(
-                          hintText: 'Search',
-                          border: InputBorder.none,
-                          icon: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.search,
-                              color: AppConstants.primaryColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
                 SizedBox(
-                  height: screenHeight * 0.8,
-                  child: ListView.builder(
-                    itemCount: favorite.length,
-                    itemBuilder: (context, index) {
-                      final question = favorite[index];
-                      return QuestionTab(
+                    height: screenHeight * 0.8,
+                    child: ListView.builder(
+                      itemCount: favoriteIds.length,
+                      itemBuilder: (context, index) {
+                        final favoriteId = favoriteIds[index];
+
+                        final question = questions.firstWhere(
+                          (q) => q.id == favoriteId,
+                          orElse: () => QuestionModel(
+                            question: '',
+                            algorithm: '',
+                            explanation: '',
+                            flowchart: '',
+                            code: '',
+                            id: '',
+                          ),
+                        );
+
+                        return QuestionTab(
                           index: index,
                           question: question.question,
                           algorithm: question.algorithm,
                           explanation: question.explanation,
                           flowchart: question.flowchart,
                           code: question.code,
-                          id: question.id);
-                    },
-                  ),
-                ),
+                          id: question.id,
+                          onDelete: () {
+                            deleteFavorite(question.id);
+                          },
+                        );
+                      },
+                    )),
               ],
             ),
           ),
@@ -160,6 +201,7 @@ class QuestionTab extends StatelessWidget {
   final String? code;
   final String? id;
   final int index;
+  final VoidCallback onDelete;
 
   const QuestionTab({
     Key? key,
@@ -170,6 +212,7 @@ class QuestionTab extends StatelessWidget {
     required this.index,
     this.explanation,
     this.id,
+    required this.onDelete,
   }) : super(key: key);
 
   @override
@@ -216,12 +259,16 @@ class QuestionTab extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    question!,
+                    question ?? '',
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),
               ),
-              const Icon(Icons.more_vert)
+              GestureDetector(
+                  onTap: () {
+                    onDelete();
+                  },
+                  child: const Icon(Icons.delete_outline))
             ],
           ),
         ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:javascript/presentation/screens/login/login.dart';
+import 'package:javascript/presentation/screens/login/login_otp.dart';
 import 'package:javascript/presentation/widgets/widebutton.dart';
 
 import 'dart:convert';
@@ -69,7 +70,10 @@ class _SignupState extends State<Signup> {
     if (success) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Login()),
+        MaterialPageRoute(
+            builder: (context) => LoginOTP(
+                  email: email,
+                )),
       );
     } else {
       print(http.Response);

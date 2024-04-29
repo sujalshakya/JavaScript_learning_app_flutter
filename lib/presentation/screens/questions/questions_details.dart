@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:javascript/constants/constants.dart';
-import 'package:javascript/presentation/screens/questions/question_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 import 'dart:convert';
@@ -32,13 +30,77 @@ class QuestionDetails extends StatefulWidget {
 
 class _QuestionDetailsState extends State<QuestionDetails> {
   dynamic response;
+  bool isLoading = false;
+  List<String> favoriteIds = [];
+  late bool isInFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    getFavorite().then((_) {
+      setState(() {
+        isInFavorite = favoriteIds.contains(widget.id);
+      });
+    });
+  }
+
+  getFavorite() async {
+    var box = await Hive.openBox('SETTINGS');
+    final String? token = box.get('token');
+
+    http.Response httpResponse = await http.get(
+      Uri.parse('https://api.codynn.com/api/favourites'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    setState(() {
+      if (httpResponse.statusCode == 200) {
+        var data = jsonDecode(httpResponse.body);
+        List<dynamic> questions = data['UserFavourites']['question'];
+        favoriteIds = questions.map((q) => q['id'].toString()).toList();
+        print('Favorite question IDs: $favoriteIds');
+      } else {
+        print('Failed to fetch favorite questions: ${httpResponse.body}');
+      }
+    });
+  }
 
   void addFavorite() async {
     var box = await Hive.openBox('SETTINGS');
     final String? token = box.get('token');
 
+    http.Response httpResponse = await http.post(
+      Uri.parse('https://api.codynn.com/api/favourites'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, dynamic>{"question": widget.id}),
+    );
+
+    setState(() {
+      if (httpResponse.statusCode == 201) {
+        isInFavorite = true;
+        print(httpResponse.body);
+        print(isInFavorite);
+        response = jsonDecode(httpResponse.body);
+      } else {
+        response = null;
+        print(httpResponse.body);
+      }
+    });
+  }
+
+  void deleteFavorite(String? questionId) async {
+    var box = await Hive.openBox('SETTINGS');
+    final String? token = box.get('token');
+
     http.Response httpResponse =
-        await http.post(Uri.parse('https://api.codynn.com/api/favourites'),
+        await http.delete(Uri.parse('https://api.codynn.com/api/favourites'),
             headers: <String, String>{
               'Authorization': 'Bearer $token',
               'Content-Type': 'application/json',
@@ -49,52 +111,15 @@ class _QuestionDetailsState extends State<QuestionDetails> {
 
     setState(() {
       if (httpResponse.statusCode == 200) {
-        print(httpResponse.body);
-        response = jsonDecode(httpResponse.body);
+        isInFavorite = false;
+        print('Question removed from favorites');
+        const SnackBar(content: Text("deleted"));
       } else {
-        response = null;
-        print(httpResponse.body);
+        print(response);
       }
     });
   }
 
-  // deleteWishlist(int id) {
-  //   String token = Hive.box('SETTINGS').get('token');
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-  //   http.delete(Uri.parse('https://api.codynn.com/api/favourites'), headers: {
-  //     'Content-Type': 'application/json',
-  //     'Authorization': 'Bearer $token'
-  //   }).then((value) {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //     print("delete wishlist status: ${value.statusCode}");
-  //     print("delete wishlist response: ${value.body}");
-  //     value.statusCode == 200
-  //         ? ScaffoldMessenger.of(context).showSnackBar(
-  //             SnackBar(
-  //               content: Text(jsonDecode(value.body)['message']),
-  //             ),
-  //           )
-  //         : ScaffoldMessenger.of(context).showSnackBar(
-  //             SnackBar(
-  //               content: Text(jsonDecode(value.body)['message']),
-  //             ),
-  //           );
-  //   }).catchError(
-  //     (error) {
-  //       setState(() {
-  //         isLoading = false;
-  //       });
-  //     },
-  //   );
-  // }
-
-  List<QuestionModel> favorite = [];
-
-  late bool isInFavorite = false;
   int selectedOption = 1;
   @override
   Widget build(BuildContext context) {
@@ -123,7 +148,7 @@ class _QuestionDetailsState extends State<QuestionDetails> {
           IconButton(
             onPressed: () {
               if (isInFavorite) {
-                // deleteFavorite(widget.id);
+                deleteFavorite(widget.id);
               } else {
                 addFavorite();
               }

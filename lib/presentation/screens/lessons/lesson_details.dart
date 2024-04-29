@@ -20,11 +20,29 @@ class _LessonDetailsState extends State<LessonDetails> {
   double _progress = 0.0;
   List<Map<dynamic, dynamic>> course = [];
   Offset _imageOffset = Offset.zero;
+  List<Map<String, dynamic>> lessons = [];
+
   @override
   void initState() {
     super.initState();
     fetchCourseData();
+    fetchLessonData();
+
     _scrollController.addListener(_updateProgress);
+  }
+
+  Future<void> fetchLessonData() async {
+    final response = await http.get(Uri.parse(
+        'https://api.codynn.com/api/course/65ce1a4afc25b0121865f1e5/lesson'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> lessonData = json.decode(response.body);
+      setState(() {
+        lessons = List<Map<String, dynamic>>.from(lessonData);
+      });
+    } else {
+      throw Exception('Failed to load lesson data');
+    }
   }
 
   void _updateProgress() {
@@ -35,6 +53,7 @@ class _LessonDetailsState extends State<LessonDetails> {
 
     setState(() {
       _progress = progress;
+      print(_scrollController.position.pixels);
       _imageOffset = Offset(_progress * 350 * 0.9, 0);
     });
   }

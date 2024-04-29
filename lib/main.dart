@@ -8,7 +8,7 @@ import 'package:javascript/presentation/screens/games/games.dart';
 import 'package:javascript/presentation/screens/games/quiz.dart';
 import 'package:javascript/presentation/screens/games/quiz_details.dart';
 import 'package:javascript/presentation/screens/javascript.dart';
-import 'package:javascript/presentation/screens/login/enter_otp.dart';
+import 'package:javascript/presentation/screens/login/forget_passsword_otp.dart';
 import 'package:javascript/presentation/screens/login/login.dart';
 import 'package:javascript/presentation/screens/notifications.dart';
 import 'package:javascript/presentation/screens/profile/leaderboard.dart';
@@ -18,6 +18,7 @@ import 'package:javascript/presentation/screens/login/signup.dart';
 import 'package:javascript/presentation/screens/profile/settings/buy_code_coins.dart';
 import 'package:javascript/presentation/screens/profile/settings/change_password.dart';
 import 'package:javascript/presentation/screens/profile/settings/settings.dart';
+import 'package:javascript/presentation/screens/questions/favorites.dart';
 import 'package:javascript/presentation/screens/splash.dart';
 import 'package:javascript/presentation/widgets/bottom_nav_bar.dart';
 import 'package:javascript/theme.dart';
@@ -25,6 +26,7 @@ import 'package:javascript/theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+  await Hive.openBox('SETTINGS');
 
   runApp(const MyApp());
 }
@@ -39,7 +41,8 @@ class MyApp extends StatelessWidget {
         theme: appTheme,
         initialRoute: "bottomnav",
         routes: {
-          'bottomnav': (context) => BottomNavBar2(selectedIndex: 0),
+          'favorite': (context) => const Favorite(),
+          'bottomnav': (context) => const BottomNavBar2(selectedIndex: 0),
           'login': (context) => Login(),
           'signup': (context) => Signup(),
           'resetpassword': (context) => ResetPassword(),

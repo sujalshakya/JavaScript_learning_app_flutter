@@ -151,13 +151,13 @@ class _QuestionTabState extends State<Questions> {
                     itemBuilder: (context, index) {
                       final question = filteredQuestions[index];
                       return QuestionTab(
-                        index: index,
-                        question: question.question,
-                        algorithm: question.algorithm,
-                        explanation: question.explanation,
-                        flowchart: question.flowchart,
-                        code: question.code,
-                      );
+                          index: index,
+                          question: question.question,
+                          algorithm: question.algorithm,
+                          explanation: question.explanation,
+                          flowchart: question.flowchart,
+                          code: question.code,
+                          id: question.id);
                     },
                   ),
                 ),
@@ -187,7 +187,7 @@ class QuestionTab extends StatelessWidget {
     this.code,
     required this.index,
     this.explanation,
-    this. id,
+    this.id,
   }) : super(key: key);
 
   @override

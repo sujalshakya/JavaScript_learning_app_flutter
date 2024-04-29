@@ -1,19 +1,18 @@
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:javascript/presentation/screens/profile/settings/change_password.dart';
+import 'package:javascript/presentation/screens/login/login.dart';
 import 'package:otp_pin_field/otp_pin_field.dart';
 
-class EnterOTP extends StatefulWidget {
+class LoginOTP extends StatefulWidget {
   final String email;
 
-  const EnterOTP({Key? key, required this.email}) : super(key: key);
+  const LoginOTP({Key? key, required this.email}) : super(key: key);
 
   @override
-  EnterOTPState createState() => EnterOTPState();
+  LoginOTPState createState() => LoginOTPState();
 }
 
-class EnterOTPState extends State<EnterOTP> {
+class LoginOTPState extends State<LoginOTP> {
   String otp = '';
 
   @override
@@ -22,7 +21,7 @@ class EnterOTPState extends State<EnterOTP> {
   }
 
   Future<void> sendOTP(String email, String otp) async {
-    const String apiUrl = 'https://api.codynn.com/api/user/verifyPin';
+    const String apiUrl = 'https://api.codynn.com/api/user/verifyOTP';
 
     try {
       final response = await http.post(
@@ -38,7 +37,7 @@ class EnterOTPState extends State<EnterOTP> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const ChangePassword(),
+            builder: (context) => Login(),
           ),
         );
       } else {

@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hive/hive.dart';
 import 'package:javascript/presentation/screens/login/login.dart';
-import 'package:javascript/presentation/screens/profile/edit_profile.dart';
 import 'package:javascript/presentation/screens/profile/settings/buy_code_coins.dart';
 import 'package:javascript/presentation/screens/profile/settings/change_password.dart';
 import 'package:javascript/presentation/screens/profile/settings/my_targets.dart';
@@ -137,10 +135,11 @@ class Settings extends StatelessWidget {
                     ),
                     GestureDetector(
                         onTap: () {
+                          Hive.box('SETTINGS').delete('token');
                           Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Login()),
-                          );
+                              context,
+                              MaterialPageRoute(
+                                  builder: ((context) => Login())));
                         },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 12.0),
