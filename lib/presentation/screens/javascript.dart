@@ -545,7 +545,10 @@ class LessonTab extends StatelessWidget {
             context,
             MaterialPageRoute(
                 builder: (context) => LessonDetails(
-                    lessonid: lessonid, lessonTitle: lessonTitle)));
+                      lessonid: lessonid,
+                      lessonTitle: lessonTitle,
+                      lessonIndex: lessonIndex,
+                    )));
       },
       child: Row(
         children: [

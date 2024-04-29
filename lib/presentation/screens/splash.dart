@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:javascript/presentation/screens/login/login.dart';
 import 'package:javascript/presentation/widgets/bottom_nav_bar.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,11 +13,11 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    check();
     super.initState();
+    check();
   }
 
-  check() async {
+  Future<void> check() async {
     var box = await Hive.openBox('SETTINGS');
     print(box.get('token'));
     if (box.get('token') != null) {
@@ -28,7 +29,10 @@ class _SplashScreenState extends State<SplashScreen> {
                 )),
       );
     } else {
-      Navigator.pushReplacementNamed(context, '/login');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Login()),
+      );
     }
   }
 

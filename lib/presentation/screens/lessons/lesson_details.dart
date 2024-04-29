@@ -3,13 +3,19 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
+import 'package:javascript/constants/constants.dart';
+import 'package:javascript/constants/text_style.dart';
 
 class LessonDetails extends StatefulWidget {
   final String lessonid;
   final String lessonTitle;
+  final int lessonIndex;
 
   const LessonDetails(
-      {super.key, required this.lessonid, required this.lessonTitle});
+      {super.key,
+      required this.lessonid,
+      required this.lessonTitle,
+      required this.lessonIndex});
 
   @override
   State<LessonDetails> createState() => _LessonDetailsState();
@@ -53,7 +59,6 @@ class _LessonDetailsState extends State<LessonDetails> {
 
     setState(() {
       _progress = progress;
-      print(_scrollController.position.pixels);
       _imageOffset = Offset(_progress * 350 * 0.9, 0);
     });
   }
@@ -96,7 +101,6 @@ class _LessonDetailsState extends State<LessonDetails> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.lessonid);
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
@@ -149,6 +153,34 @@ class _LessonDetailsState extends State<LessonDetails> {
               const SizedBox(
                 height: 16,
               ),
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: const Color(0XFFEDEBFF)),
+                      child: Center(
+                        child: Text(
+                          widget.lessonIndex.toString(),
+                          style:
+                              const TextStyle(color: AppConstants.primaryColor),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      widget.lessonTitle,
+                      style: AppTextStyles.headingStyle,
+                    ),
+                  ),
+                ],
+              ),
               Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
@@ -187,6 +219,47 @@ class _LessonDetailsState extends State<LessonDetails> {
                                       title: Text(textData),
                                     );
                                   }
+                                } else if (block['type'] == 'extraCues') {
+                                  final cueType = block['data']['cueType'];
+                                  final cueInfo = block['data']['cueInfo'];
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      width: screenWidth,
+                                      decoration: BoxDecoration(
+                                          color: Color(0x33FFCE00),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          border: Border.all(
+                                              color: Color(0XFFFFCE00),
+                                              width: 2)),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                8.0, 16.0, 0, 0),
+                                            child: Text(
+                                              cueType,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                8.0, 0, 8.0, 16.0),
+                                            child: Text(
+                                              cueInfo,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
                                 } else if (block['type'] == 'code') {
                                   final codeData = block['data'] != null &&
                                           block['data']['code'] != null

@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
     return (MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: appTheme,
-        initialRoute: "bottomnav",
+        initialRoute: "splash",
         routes: {
           'favorite': (context) => const Favorite(),
           'bottomnav': (context) => const BottomNavBar2(selectedIndex: 0),

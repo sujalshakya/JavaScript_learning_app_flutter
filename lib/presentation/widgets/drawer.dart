@@ -9,7 +9,6 @@ import 'package:javascript/presentation/screens/profile/settings/my_targets.dart
 import 'package:javascript/presentation/screens/profile/settings/settings.dart';
 import 'package:javascript/presentation/screens/questions/favorites.dart';
 import 'package:javascript/presentation/widgets/bottom_nav_bar.dart';
-import 'package:hive/hive.dart';
 
 class MyDrawer extends StatelessWidget {
   MyDrawer({Key? key}) : super(key: key);
