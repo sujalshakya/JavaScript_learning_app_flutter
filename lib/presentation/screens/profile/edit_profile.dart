@@ -79,9 +79,7 @@ class _EditProfileState extends State<EditProfile> {
       }),
     );
 
-    print(response.body);
-    print(response.statusCode);
-    print(phoneNumber);
+
     if (response.statusCode == 200) {
       setState(() {
         isLoading = false;
@@ -125,10 +123,10 @@ class _EditProfileState extends State<EditProfile> {
         );
         request.fields.addAll({
           'api_key':
-              'YOUR_API_KEY', 
+              '', 
           'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
           'upload_preset':
-              'YOUR_UPLOAD_PRESET', 
+              '', 
         });
         request.files.add(
           await http.MultipartFile.fromPath(

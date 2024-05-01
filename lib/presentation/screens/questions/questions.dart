@@ -22,6 +22,7 @@ class Questions extends StatefulWidget {
 class _QuestionTabState extends State<Questions> {
   late List<QuestionModel> questions = [];
   late List<QuestionModel> filteredQuestions = [];
+  bool isLoading = true; 
 
   Timer? _debounce;
 
@@ -67,14 +68,16 @@ class _QuestionTabState extends State<Questions> {
             });
           }
         } else {
-          print(
-              'Invalid response format: Questions not found in response data');
         }
       } else {
         print('Failed to fetch questions: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching questions: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -82,6 +85,15 @@ class _QuestionTabState extends State<Questions> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+
+    if (isLoading) {
+    
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(

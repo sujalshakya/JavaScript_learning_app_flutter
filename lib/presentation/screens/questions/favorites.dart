@@ -19,7 +19,6 @@ class _FavoriteState extends State<Favorite> {
   late List<QuestionModel> questions = [];
   dynamic response;
 
-  Timer? _debounce;
   @override
   void initState() {
     super.initState();
@@ -30,7 +29,6 @@ class _FavoriteState extends State<Favorite> {
   void deleteFavorite(String questionId) async {
     var box = await Hive.openBox('SETTINGS');
     final String? token = box.get('token');
-    print(questionId);
 
     http.Response httpResponse =
         await http.delete(Uri.parse('https://api.codynn.com/api/favourites'),
@@ -41,8 +39,6 @@ class _FavoriteState extends State<Favorite> {
             body: jsonEncode(
               <String, String>{"question": questionId},
             ));
-    int statusCode = httpResponse.statusCode;
-    print('Response status code: $statusCode');
     setState(() {
       if (httpResponse.statusCode == 200) {
         setState(() {
@@ -50,7 +46,6 @@ class _FavoriteState extends State<Favorite> {
         });
         const SnackBar(content: Text("deleted"));
       } else {
-        print(response);
       }
     });
   }
@@ -66,16 +61,13 @@ class _FavoriteState extends State<Favorite> {
         'Content-Type': 'application/json',
       },
     );
-    print(token);
 
     setState(() {
       if (httpResponse.statusCode == 200) {
         var data = jsonDecode(httpResponse.body);
         List<dynamic> questions = data['UserFavourites']['question'];
         favoriteIds = questions.map((q) => q['id'].toString()).toList();
-        print('Favorite question IDs: $favoriteIds');
       } else {
-        print('Failed to fetch favorite questions: ${httpResponse.body}');
       }
     });
   }
@@ -98,21 +90,15 @@ class _FavoriteState extends State<Favorite> {
               code: data['solutions'][0]['code'],
               id: data['id'],
             );
-            if (question.id != null) {
-              setState(() {
-                questions.add(question);
-              });
-            }
-          }
+            setState(() {
+              questions.add(question);
+            });
+                    }
         } else {
-          print(
-              'Invalid response format: Questions not found in response data');
         }
       } else {
-        print('Failed to fetch questions: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching questions: $e');
     }
   }
 

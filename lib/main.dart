@@ -6,7 +6,6 @@ import 'package:javascript/presentation/screens/daily_streak.dart';
 import 'package:javascript/presentation/screens/games/challenges.dart';
 import 'package:javascript/presentation/screens/games/games.dart';
 import 'package:javascript/presentation/screens/games/quiz.dart';
-import 'package:javascript/presentation/screens/games/quiz_details.dart';
 import 'package:javascript/presentation/screens/javascript.dart';
 import 'package:javascript/presentation/screens/login/forget_passsword_otp.dart';
 import 'package:javascript/presentation/screens/login/login.dart';
@@ -52,7 +51,6 @@ class MyApp extends StatelessWidget {
           'games': (context) => const Games(),
           'quiz': (context) => const Quiz(),
           'profile': (context) => const ProfilePage(),
-          'quiz_details': (context) => const QuizDetails(),
           'settings': (context) => const Settings(),
           'changepassword': (context) => const ChangePassword(),
           'buycoins': (context) => const BuyCoins(),

@@ -85,12 +85,10 @@ class _QuestionDetailsState extends State<QuestionDetails> {
     setState(() {
       if (httpResponse.statusCode == 201) {
         isInFavorite = true;
-        print(httpResponse.body);
-        print(isInFavorite);
+
         response = jsonDecode(httpResponse.body);
       } else {
         response = null;
-        print(httpResponse.body);
       }
     });
   }

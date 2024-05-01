@@ -63,7 +63,7 @@ class Settings extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () {},
-                      child: Barbuilder(
+                      child: const Barbuilder(
                         leadingIcon: Icons.border_color_outlined,
                         text: "Edit profile",
                         trailingIcon: Icons.arrow_forward_ios,
@@ -105,12 +105,12 @@ class Settings extends StatelessWidget {
                         trailingIcon: Icons.arrow_forward_ios,
                       ),
                     ),
-                    Barbuilder(
+                    const Barbuilder(
                       leadingIcon: Icons.notifications_outlined,
                       text: "Push Notifications",
                       trailingIcon: Icons.toggle_on_rounded,
                     ),
-                    Barbuilder(
+                    const Barbuilder(
                       leadingIcon: Icons.dark_mode_outlined,
                       text: "Dark Theme",
                       trailingIcon: Icons.toggle_on_rounded,
@@ -193,7 +193,7 @@ class Barbuilder extends StatelessWidget {
   final String text;
   final IconData trailingIcon;
 
-  Barbuilder({
+  const Barbuilder({super.key, 
     required this.leadingIcon,
     required this.text,
     required this.trailingIcon,

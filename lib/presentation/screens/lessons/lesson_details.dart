@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 import 'package:javascript/constants/constants.dart';
 import 'package:javascript/constants/text_style.dart';
+import 'package:javascript/presentation/screens/lessons/fill_blanks.dart';
+import 'package:javascript/presentation/screens/lessons/quiz_details.dart';
 
 class LessonDetails extends StatefulWidget {
   final String lessonid;
@@ -27,7 +29,9 @@ class _LessonDetailsState extends State<LessonDetails> {
   List<Map<dynamic, dynamic>> course = [];
   Offset _imageOffset = Offset.zero;
   List<Map<String, dynamic>> lessons = [];
-
+  Color selectedOptionColor = Colors.black;
+  String selectedOption = '';
+  int _currentBlockIndex = 0;
   @override
   void initState() {
     super.initState();
@@ -184,9 +188,9 @@ class _LessonDetailsState extends State<LessonDetails> {
               Expanded(
                 child: ListView.builder(
                   controller: _scrollController,
-                  itemCount: course.length,
+                  itemCount: 1,
                   itemBuilder: (BuildContext context, int index) {
-                    final chapter = course[index];
+                    final chapter = course[_currentBlockIndex];
                     final content = chapter['content'];
 
                     return Column(
@@ -227,11 +231,11 @@ class _LessonDetailsState extends State<LessonDetails> {
                                     child: Container(
                                       width: screenWidth,
                                       decoration: BoxDecoration(
-                                          color: Color(0x33FFCE00),
+                                          color: const Color(0x33FFCE00),
                                           borderRadius:
                                               BorderRadius.circular(12),
                                           border: Border.all(
-                                              color: Color(0XFFFFCE00),
+                                              color: const Color(0XFFFFCE00),
                                               width: 2)),
                                       child: Column(
                                         crossAxisAlignment:
@@ -267,6 +271,79 @@ class _LessonDetailsState extends State<LessonDetails> {
                                       : '';
                                   return ListTile(
                                     title: Text(codeData),
+                                  );
+                                } else if (block['type'] == 'MCQs') {
+                                  final question = block['data']['question'];
+                                  final options = block['data']['options'];
+                                  final correctAnswer =
+                                      block['data']['correctAns'];
+                                  return InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => QuizDetails(
+                                                  question: question,
+                                                  correctAnswer: correctAnswer,
+                                                  options: options,
+                                                )),
+                                      );
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        width: screenWidth,
+                                        decoration: BoxDecoration(
+                                            color: const Color(0x33FFCE00),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                            border: Border.all(
+                                                color: const Color(0XFFFFCE00),
+                                                width: 2)),
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text("Start Quiz!"),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                } else if (block['type'] == 'fillInTheBlanks') {
+                                  final question = block['data']['question'];
+                                  final option = block['data']['options'];
+                                  final placeholder =
+                                      block['data']['placeholder'];
+                                  final answer = block['data']['answer'];
+                                  return InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => FillBlanks(
+                                                  question: question,
+                                                  answer: answer,
+                                                  placeholder: placeholder,
+                                                  option: option,
+                                                )),
+                                      );
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        width: screenWidth,
+                                        decoration: BoxDecoration(
+                                            color: const Color(0x33FFCE00),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                            border: Border.all(
+                                                color: const Color(0XFFFFCE00),
+                                                width: 2)),
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child:
+                                              Text("Answer Fill in The Blanks"),
+                                        ),
+                                      ),
+                                    ),
                                   );
                                 } else if (block['type'] == 'list') {
                                   final List<dynamic>? items =

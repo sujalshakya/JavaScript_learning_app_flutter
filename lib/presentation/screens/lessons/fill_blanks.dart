@@ -3,16 +3,27 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:javascript/presentation/widgets/widebutton.dart';
 
-class QuizDetails extends StatefulWidget {
-  const QuizDetails({super.key});
+class FillBlanks extends StatefulWidget {
+  final String question;
+  final String? answer;
+  final String? placeholder;
+  final List option;
+  FillBlanks({
+    Key? key,
+    required this.question,
+    required this.answer,
+    required this.placeholder,
+    required this.option,
+  }) : super(key: key);
 
   @override
-  State<QuizDetails> createState() => _QuizDetailsState();
+  State<FillBlanks> createState() => FillBlanksState();
 }
 
-class _QuizDetailsState extends State<QuizDetails> {
+class FillBlanksState extends State<FillBlanks> {
   int _timerValue = 60;
   late Timer _timer;
+  int? _selectedOptionIndex;
   @override
   void initState() {
     super.initState();
@@ -45,6 +56,24 @@ class _QuizDetailsState extends State<QuizDetails> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    const gridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      mainAxisSpacing: 4.0,
+      crossAxisSpacing: 4.0,
+      childAspectRatio: 2.10,
+    );
+    Color resultColor = Colors.white;
+    String resultText = "";
+    if (_selectedOptionIndex != null) {
+      if (widget.option[_selectedOptionIndex!] == widget.answer) {
+        resultText = "Correct";
+        resultColor = Color(0XFF48CF3C);
+      } else {
+        resultText = "Incorrect";
+        resultColor = Color(0XFFFF4B57);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -59,13 +88,13 @@ class _QuizDetailsState extends State<QuizDetails> {
           color: Color(0xFF644AFF),
         ),
         title: const Text(
-          "Quiz",
+          "Fill in the Blanks",
           style: TextStyle(color: Colors.black, fontSize: 16),
         ),
         centerTitle: true,
       ),
       body: Center(
-        child: Container(
+        child: SizedBox(
           width: screenWidth * 0.9,
           child: Column(
             children: [
@@ -86,10 +115,11 @@ class _QuizDetailsState extends State<QuizDetails> {
               ),
               SizedBox(
                 width: screenWidth * 0.9,
-                child: const LinearProgressIndicator(
-                  value: 0.25,
-                  backgroundColor: Color(0x59513EDD),
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF513EDD)),
+                child: LinearProgressIndicator(
+                  value: _timerValue / 60,
+                  backgroundColor: const Color(0x59513EDD),
+                  valueColor:
+                      const AlwaysStoppedAnimation<Color>(Color(0xFF513EDD)),
                 ),
               ),
               const SizedBox(
@@ -115,7 +145,7 @@ class _QuizDetailsState extends State<QuizDetails> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                                "Question 1 ",
+                                "Question",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 16),
                               ),
@@ -145,11 +175,11 @@ class _QuizDetailsState extends State<QuizDetails> {
                       SizedBox(
                         height: screenHeight * 0.02,
                       ),
-                      const Row(
+                      Row(
                         children: [
-                          Text("What is element called that",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16)),
+                          Text(widget.question,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 16)),
                         ],
                       )
                     ],
@@ -159,87 +189,69 @@ class _QuizDetailsState extends State<QuizDetails> {
               SizedBox(
                 height: screenHeight * 0.1,
               ),
-              const Text("Choose the correct one:"),
-              Row(
-                children: [
-                  (Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: screenWidth * 0.4,
-                      height: screenHeight * 0.07,
-                      decoration: BoxDecoration(
-                        color: const Color(0XFFF5F5F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Loop",
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ),
-                  )),
-                  (Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: screenWidth * 0.4,
-                      height: screenHeight * 0.07,
-                      decoration: BoxDecoration(
-                        color: const Color(0XFFF5F5F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Loop",
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ),
-                  )),
-                ],
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Text(
+                  resultText.isNotEmpty
+                      ? resultText
+                      : "Choose the correct one:",
+                  style: TextStyle(fontSize: 18, color: resultColor),
+                ),
               ),
-              Row(
-                children: [
-                  (Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: screenWidth * 0.4,
-                      height: screenHeight * 0.07,
-                      decoration: BoxDecoration(
-                        color: const Color(0XFFF5F5F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Loop",
-                          style: TextStyle(fontWeight: FontWeight.w500),
+              SizedBox(
+                height: screenHeight * 0.051,
+              ),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: gridDelegate,
+                  itemCount: widget.option.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedOptionIndex = index;
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: screenWidth * 0.4,
+                          height: screenHeight * 0.2,
+                          decoration: BoxDecoration(
+                            color: _selectedOptionIndex == index
+                                ? widget.option[index] == widget.answer
+                                    ? const Color(0XFF48CF3C)
+                                    : const Color(0XFFFF4B57)
+                                : const Color(0XFFF5F5F5),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Text(
+                              widget.option[index],
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  )),
-                  (Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: screenWidth * 0.4,
-                      height: screenHeight * 0.07,
-                      decoration: BoxDecoration(
-                        color: const Color(0XFFF5F5F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Loop",
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ),
-                  )),
-                ],
+                    );
+                  },
+                ),
               ),
               SizedBox(
                 height: screenHeight * 0.04,
               ),
-              WideButton(text: "Next", screenHeight: screenHeight, onPressed: () {  },)
+              WideButton(
+                text: "Continue",
+                screenHeight: screenHeight,
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              SizedBox(
+                height: screenHeight * 0.04,
+              ),
             ],
           ),
         ),

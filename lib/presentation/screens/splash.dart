@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:javascript/presentation/screens/login/login.dart';
@@ -19,7 +21,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> check() async {
     var box = await Hive.openBox('SETTINGS');
-    print(box.get('token'));
     if (box.get('token') != null) {
       Navigator.push(
         context,

@@ -3,16 +3,25 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:javascript/presentation/widgets/widebutton.dart';
 
-class CodeQuestDetails extends StatefulWidget {
-  const CodeQuestDetails({super.key});
+class QuizDetails extends StatefulWidget {
+  final String question;
+  final String? correctAnswer;
+  final List options;
+  QuizDetails({
+    Key? key,
+    required this.question,
+    required this.correctAnswer,
+    required this.options,
+  }) : super(key: key);
 
   @override
-  State<CodeQuestDetails> createState() => CodeQuestDetailsState();
+  State<QuizDetails> createState() => _QuizDetailsState();
 }
 
-class CodeQuestDetailsState extends State<CodeQuestDetails> {
+class _QuizDetailsState extends State<QuizDetails> {
   int _timerValue = 60;
   late Timer _timer;
+  int? _selectedOptionIndex;
   @override
   void initState() {
     super.initState();
@@ -45,6 +54,24 @@ class CodeQuestDetailsState extends State<CodeQuestDetails> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    const gridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      mainAxisSpacing: 4.0,
+      crossAxisSpacing: 4.0,
+      childAspectRatio: 2.10,
+    );
+    Color resultColor = Colors.white;
+    String resultText = "";
+    if (_selectedOptionIndex != null) {
+      if (widget.options[_selectedOptionIndex!] == widget.correctAnswer) {
+        resultText = "Correct";
+        resultColor = const Color(0XFF48CF3C);
+      } else {
+        resultText = "Incorrect";
+        resultColor = const Color(0XFFFF4B57);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -59,7 +86,7 @@ class CodeQuestDetailsState extends State<CodeQuestDetails> {
           color: Color(0xFF644AFF),
         ),
         title: const Text(
-          "Code Quest",
+          "Quiz",
           style: TextStyle(color: Colors.black, fontSize: 16),
         ),
         centerTitle: true,
@@ -86,10 +113,11 @@ class CodeQuestDetailsState extends State<CodeQuestDetails> {
               ),
               SizedBox(
                 width: screenWidth * 0.9,
-                child: const LinearProgressIndicator(
-                  value: 0.25,
-                  backgroundColor: Color(0x59513EDD),
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF513EDD)),
+                child: LinearProgressIndicator(
+                  value: _timerValue / 60,
+                  backgroundColor: const Color(0x59513EDD),
+                  valueColor:
+                      const AlwaysStoppedAnimation<Color>(Color(0xFF513EDD)),
                 ),
               ),
               const SizedBox(
@@ -109,13 +137,13 @@ class CodeQuestDetailsState extends State<CodeQuestDetails> {
                   child: Column(
                     children: [
                       Stack(children: [
-                        SizedBox(
+                        Container(
                           height: 40,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                                "Question 1 ",
+                                "Question",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 16),
                               ),
@@ -145,11 +173,11 @@ class CodeQuestDetailsState extends State<CodeQuestDetails> {
                       SizedBox(
                         height: screenHeight * 0.02,
                       ),
-                      const Row(
+                      Row(
                         children: [
-                          Text("What is element called that",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16)),
+                          Text(widget.question,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 16)),
                         ],
                       )
                     ],
@@ -157,93 +185,82 @@ class CodeQuestDetailsState extends State<CodeQuestDetails> {
                 ),
               ),
               SizedBox(
-                height: screenHeight * 0.1,
+                height: screenHeight * 0.05,
               ),
-              const Text("Choose the correct one:"),
-              Row(
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Text(
+                  resultText.isNotEmpty
+                      ? resultText
+                      : "Choose the correct one:",
+                  style: TextStyle(fontSize: 18, color: resultColor),
+                ),
+              ),
+              SizedBox(
+                height: screenHeight * 0.02,
+              ),
+              const Row(
                 children: [
-                  (Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: screenWidth * 0.4,
-                      height: screenHeight * 0.07,
-                      decoration: BoxDecoration(
-                        color: const Color(0XFFF5F5F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Loop",
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                      ),
+                  Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: Text(
+                      "Choose the correct one:",
+                      style: TextStyle(fontSize: 18, color: Colors.black),
                     ),
-                  )),
-                  (Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: screenWidth * 0.4,
-                      height: screenHeight * 0.07,
-                      decoration: BoxDecoration(
-                        color: const Color(0XFFF5F5F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Loop",
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ),
-                  )),
+                  ),
                 ],
               ),
-              Row(
-                children: [
-                  (Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: screenWidth * 0.4,
-                      height: screenHeight * 0.07,
-                      decoration: BoxDecoration(
-                        color: const Color(0XFFF5F5F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Loop",
-                          style: TextStyle(fontWeight: FontWeight.w500),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: gridDelegate,
+                  itemCount: widget.options.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedOptionIndex = index;
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: screenWidth * 0.4,
+                          height: screenHeight * 0.2,
+                          decoration: BoxDecoration(
+                            color: _selectedOptionIndex == index
+                                ? widget.options[index] == widget.correctAnswer
+                                    ? const Color(0XFF48CF3C)
+                                    : const Color(0XFFFF4B57)
+                                : const Color(0XFFF5F5F5),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Text(
+                              widget.options[index],
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  )),
-                  (Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      width: screenWidth * 0.4,
-                      height: screenHeight * 0.07,
-                      decoration: BoxDecoration(
-                        color: const Color(0XFFF5F5F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "Loop",
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                    ),
-                  )),
-                ],
+                    );
+                  },
+                ),
               ),
               SizedBox(
                 height: screenHeight * 0.04,
               ),
               WideButton(
-                text: "Next",
+                text: "Continue",
                 screenHeight: screenHeight,
-                onPressed: () {},
-              )
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              SizedBox(
+                height: screenHeight * 0.04,
+              ),
             ],
           ),
         ),

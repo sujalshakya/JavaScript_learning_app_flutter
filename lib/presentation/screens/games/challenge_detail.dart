@@ -72,11 +72,9 @@ class ChallengeDetailsState extends State<ChallengeDetails> {
 
     setState(() {
       if (httpResponse.statusCode == 200) {
-        print(httpResponse.body);
         response = jsonDecode(httpResponse.body);
       } else {
         response = null;
-        print(httpResponse.body);
       }
     });
   }
@@ -94,7 +92,7 @@ class ChallengeDetailsState extends State<ChallengeDetails> {
           width: screenWidth * 0.85,
           height: 100,
           decoration: BoxDecoration(
-            color: passed ? Color(0XFF32C100) : Color(0XFFFF9A9A),
+            color: passed ? const Color(0XFF32C100) : const Color(0XFFFF9A9A),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Padding(
@@ -109,13 +107,11 @@ class ChallengeDetailsState extends State<ChallengeDetails> {
           ),
         );
       } else {
-        return Container(
-          child: const Text(
-            'Output not available',
-            style: TextStyle(
-              color: Colors.red,
-              fontSize: 14,
-            ),
+        return const Text(
+          'Output not available',
+          style: TextStyle(
+            color: Colors.red,
+            fontSize: 14,
           ),
         );
       }
