@@ -8,7 +8,7 @@ class FillBlanks extends StatefulWidget {
   final String? answer;
   final String? placeholder;
   final List option;
-  FillBlanks({
+  const FillBlanks({
     Key? key,
     required this.question,
     required this.answer,
@@ -67,10 +67,10 @@ class FillBlanksState extends State<FillBlanks> {
     if (_selectedOptionIndex != null) {
       if (widget.option[_selectedOptionIndex!] == widget.answer) {
         resultText = "Correct";
-        resultColor = Color(0XFF48CF3C);
+        resultColor = const Color(0XFF48CF3C);
       } else {
         resultText = "Incorrect";
-        resultColor = Color(0XFFFF4B57);
+        resultColor = const Color(0XFFFF4B57);
       }
     }
 

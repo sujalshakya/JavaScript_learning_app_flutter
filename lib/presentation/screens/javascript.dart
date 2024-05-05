@@ -532,7 +532,7 @@ class LessonTab extends StatelessWidget {
   final String lessonid;
 
   const LessonTab(
-      {Key,
+      {super.key, Key,
       required this.lessonTitle,
       required this.lessonIndex,
       required this.lessonid});

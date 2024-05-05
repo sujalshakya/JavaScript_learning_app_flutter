@@ -46,7 +46,6 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
 
-    print(response.body);
     if (response.statusCode == 200) {
       return ProfileModel.fromJson(jsonDecode(response.body));
     } else {
@@ -103,6 +102,7 @@ class _ProfilePageState extends State<ProfilePage> {
               if (profile == null) {
                 return const Center(child: Text('Profile data is null'));
               }
+              print(profile.profile.profilePicture);
 
               return Center(
                 child: SizedBox(
@@ -117,10 +117,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             Container(
                               margin: const EdgeInsets.only(right: 16.0),
-                              child: const CircleAvatar(
+                              child: CircleAvatar(
                                 backgroundColor: AppConstants.primaryColor,
                                 radius: 50,
-                                backgroundImage: AssetImage(''),
+                                backgroundImage:
+                                    profile.profile.profilePicture != null
+                                        ? NetworkImage(
+                                            profile.profile.profilePicture)
+                                        : null,
                               ),
                             ),
                             Column(
@@ -147,13 +151,22 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
+                                  onTap: () async {
+                                    final result = await Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              EditProfile(profile: profile)),
+                                        builder: (context) =>
+                                            EditProfile(profile: profile),
+                                      ),
                                     );
+
+                                    if (result != null &&
+                                        result is bool &&
+                                        result) {
+                                      setState(() {
+                                        getProfile();
+                                      });
+                                    }
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(

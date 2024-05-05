@@ -1,13 +1,50 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:javascript/models/profile_model.dart';
 import 'package:javascript/presentation/screens/daily_streak.dart';
+import 'package:javascript/presentation/screens/data_structures.dart';
 import 'package:javascript/presentation/screens/questions/questions.dart';
 import 'package:javascript/presentation/widgets/bottom_nav_bar.dart';
 import 'package:javascript/presentation/widgets/drawer.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:http/http.dart' as http;
 
-
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  late ProfileModel profile;
+
+  @override
+  void initState() {
+    super.initState();
+    getProfile();
+  }
+
+  Future<ProfileModel>? getProfile() async {
+    var box = await Hive.openBox('SETTINGS');
+    final String? token = box.get('token');
+
+    final response = await http.get(
+      Uri.parse("https://api.codynn.com/api/profile/user"),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return ProfileModel.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to fetch profile data');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +73,28 @@ class Home extends StatelessWidget {
           color: Color(0xFF644AFF),
         ),
         actions: <Widget>[
-          Container(
-            margin: const EdgeInsets.only(right: 16.0),
-            child: const CircleAvatar(
-              radius: 20,
-              backgroundImage: AssetImage('path_to_your_image'),
-            ),
+          FutureBuilder<ProfileModel>(
+            future: getProfile(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else if (snapshot.hasData) {
+                final profile = snapshot.data!;
+                return Container(
+                  margin: const EdgeInsets.only(right: 16.0),
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundImage: profile.profile.profilePicture != null
+                        ? NetworkImage(profile.profile.profilePicture!)
+                        : null,
+                  ),
+                );
+              } else {
+                return Container();
+              }
+            },
           ),
         ],
       ),
@@ -389,109 +442,152 @@ class Home extends StatelessWidget {
             SizedBox(
               height: screenHeight * 0.02,
             ),
-            SizedBox(
-              width: screenWidth * 0.9,
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Container(
-                      width: screenWidth * 0.42,
-                      height: screenHeight * 0.09,
-                      decoration: BoxDecoration(
-                        image: const DecorationImage(
-                          image: AssetImage(
-                              'assets/background/list_background.png'),
-                          fit: BoxFit.fill,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const DataStructures(
+                              index: 0,
+                            )));
+              },
+              child: SizedBox(
+                width: screenWidth * 0.9,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        width: screenWidth * 0.42,
+                        height: screenHeight * 0.09,
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
+                            image: AssetImage(
+                                'assets/background/list_background.png'),
+                            fit: BoxFit.fill,
+                          ),
+                          color: const Color(0XFFF5F5F5),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        color: const Color(0XFFF5F5F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.fromLTRB(20, 28, 0, 0),
-                        child: Text(
-                          "Lists",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w400, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Container(
-                      width: screenWidth * 0.42,
-                      height: screenHeight * 0.09,
-                      decoration: BoxDecoration(
-                        image: const DecorationImage(
-                          image: AssetImage(
-                              'assets/background/dictionary_background.png'),
-                          fit: BoxFit.fill,
-                        ),
-                        color: const Color(0XFFF5F5F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.fromLTRB(20, 28, 0, 0),
-                        child: Text(
-                          "Dictionary",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w400, color: Colors.white),
+                        child: const Padding(
+                          padding: EdgeInsets.fromLTRB(20, 28, 0, 0),
+                          child: Text(
+                            "Lists",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DataStructures(
+                                      index: 1,
+                                    )));
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Container(
+                          width: screenWidth * 0.42,
+                          height: screenHeight * 0.09,
+                          decoration: BoxDecoration(
+                            image: const DecorationImage(
+                              image: AssetImage(
+                                  'assets/background/dictionary_background.png'),
+                              fit: BoxFit.fill,
+                            ),
+                            color: const Color(0XFFF5F5F5),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.fromLTRB(20, 28, 0, 0),
+                            child: Text(
+                              "Dictionary",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             SizedBox(
               width: screenWidth * 0.9,
               child: Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Container(
-                      width: screenWidth * 0.42,
-                      height: screenHeight * 0.09,
-                      decoration: BoxDecoration(
-                        image: const DecorationImage(
-                          image: AssetImage(
-                              'assets/background/tuples_background.png'),
-                          fit: BoxFit.fill,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const DataStructures(
+                                    index: 2,
+                                  )));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        width: screenWidth * 0.42,
+                        height: screenHeight * 0.09,
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
+                            image: AssetImage(
+                                'assets/background/tuples_background.png'),
+                            fit: BoxFit.fill,
+                          ),
+                          color: const Color(0XFFF5F5F5),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        color: const Color(0XFFF5F5F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.fromLTRB(20, 28, 0, 0),
-                        child: Text(
-                          "Tuples",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w400, color: Colors.white),
+                        child: const Padding(
+                          padding: EdgeInsets.fromLTRB(20, 28, 0, 0),
+                          child: Text(
+                            "Tuples",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: Container(
-                      width: screenWidth * 0.42,
-                      height: screenHeight * 0.09,
-                      decoration: BoxDecoration(
-                        image: const DecorationImage(
-                          image: AssetImage(
-                              'assets/background/sets_background.png'),
-                          fit: BoxFit.fill,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const DataStructures(index: 3)));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Container(
+                        width: screenWidth * 0.42,
+                        height: screenHeight * 0.09,
+                        decoration: BoxDecoration(
+                          image: const DecorationImage(
+                            image: AssetImage(
+                                'assets/background/sets_background.png'),
+                            fit: BoxFit.fill,
+                          ),
+                          color: const Color(0XFFF5F5F5),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        color: const Color(0XFFF5F5F5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.fromLTRB(20, 28, 0, 0),
-                        child: Text(
-                          "Sets",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w400, color: Colors.white),
+                        child: const Padding(
+                          padding: EdgeInsets.fromLTRB(20, 28, 0, 0),
+                          child: Text(
+                            "Sets",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white),
+                          ),
                         ),
                       ),
                     ),

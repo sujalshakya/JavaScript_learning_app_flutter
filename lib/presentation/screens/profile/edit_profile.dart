@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -58,27 +60,30 @@ class _EditProfileState extends State<EditProfile> {
     String bio,
     String dateOfBirth,
     String phoneNumber,
+    String? imageUrl,
   ) async {
     var box = await Hive.openBox('SETTINGS');
     final String? token = box.get('token');
     setState(() {
       isLoading = true;
     });
-
+    final Map<String, dynamic> requestBody = {
+      'username': name,
+      'bio': bio,
+      'phone_number': phoneNumber,
+      'date_of_birth': dateOfBirth,
+    };
+    if (imageUrl != null) {
+      requestBody['profile_picture'] = imageUrl;
+    }
     final response = await http.patch(
       Uri.parse("https://api.codynn.com/api/profile/user"),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode({
-        'username': name,
-        'bio': bio,
-        'phone_number': phoneNumber,
-        'date_of_birth': dateOfBirth,
-      }),
+      body: jsonEncode(requestBody),
     );
-
 
     if (response.statusCode == 200) {
       setState(() {
@@ -90,7 +95,7 @@ class _EditProfileState extends State<EditProfile> {
           content: Text('Profile Updated Successfully!'),
         ),
       );
-      Navigator.pop(context);
+      Navigator.pop(context, true);
     } else {
       setState(() {
         isLoading = false;
@@ -115,48 +120,31 @@ class _EditProfileState extends State<EditProfile> {
       setState(() {
         _image = File(pickedFile.path);
       });
-
+//cloudinary url and preset needs to be changed
       if (_image != null) {
-        var request = http.MultipartRequest(
+        final request = http.MultipartRequest(
           'POST',
           Uri.parse('https://api.cloudinary.com/v1_1/doz26xia5/image/upload'),
-        );
-        request.fields.addAll({
-          'api_key':
-              '', 
-          'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
-          'upload_preset':
-              '', 
-        });
-        request.files.add(
-          await http.MultipartFile.fromPath(
-            'image',
-            _image!.path,
-            contentType: MediaType('image', 'jpeg'),
-          ),
-        );
+        )
+          ..fields['upload_preset'] = 'n01rilm1'
+          ..files.add(await http.MultipartFile.fromPath('file', _image!.path));
 
-        var response = await request.send();
+        final response = await request.send();
+
 
         if (response.statusCode == 200) {
-          print('Image uploaded successfully');
-          String responseBody = await response.stream.bytesToString();
-          print(responseBody);
-          var jsonResponse = json.decode(responseBody);
-          String uploadedImageUrl = jsonResponse['url'];
-
-          setState(() {
-            imageUrl = uploadedImageUrl;
-          });
-
-          print('Image URL: $imageUrl');
-        } else {
-          print('Failed to upload image. Status code: ${response.statusCode}');
-        }
+          final responseBody = await response.stream.toBytes();
+          final jsonResponse = String.fromCharCodes(responseBody);
+          final jsonMap = jsonDecode(jsonResponse);
+          if (mounted) {
+            setState(() {
+              imageUrl = jsonMap['url'];
+            });
+          }
+        } else if (response.statusCode == 400) {
+        } else {}
       }
-    } else {
-      print('No image selected.');
-    }
+    } else {}
   }
 
   @override
@@ -361,12 +349,14 @@ class _EditProfileState extends State<EditProfile> {
                 WideButton(
                   text: "Save",
                   screenHeight: screenHeight,
-                  onPressed: () {
+                  onPressed: () async {
+                    await _getImage();
                     updateProfile(
                       nameController.text,
                       bioController.text,
                       dateOfBirthController.text,
                       phoneNumberController.text,
+                      imageUrl,
                     );
                   },
                 )

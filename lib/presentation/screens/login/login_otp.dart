@@ -33,7 +33,6 @@ class LoginOTPState extends State<LoginOTP> {
       );
 
       if (response.statusCode == 200) {
-        print('OTP sent successfully');
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -41,10 +40,8 @@ class LoginOTPState extends State<LoginOTP> {
           ),
         );
       } else {
-        print('${response.body}. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      print('Failed to send OTP. Error: $e');
     }
   }
 

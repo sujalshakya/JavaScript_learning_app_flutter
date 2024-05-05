@@ -1,12 +1,50 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:hive/hive.dart';
 import 'package:javascript/constants/constants.dart';
 import 'package:javascript/constants/text_style.dart';
+import 'package:javascript/models/profile_model.dart';
 import 'package:javascript/presentation/screens/javascript.dart';
 import 'package:javascript/presentation/widgets/drawer.dart';
+import 'package:http/http.dart' as http;
 
-class Course extends StatelessWidget {
+class Course extends StatefulWidget {
   const Course({super.key});
+
+  @override
+  State<Course> createState() => _CourseState();
+}
+
+class _CourseState extends State<Course> {
+  late ProfileModel profile;
+
+  @override
+  void initState() {
+    super.initState();
+    getProfile();
+  }
+
+  Future<ProfileModel>? getProfile() async {
+    var box = await Hive.openBox('SETTINGS');
+    final String? token = box.get('token');
+
+    final response = await http.get(
+      Uri.parse("https://api.codynn.com/api/profile/user"),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print(response.body);
+    if (response.statusCode == 200) {
+      return ProfileModel.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to fetch profile data');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,12 +73,28 @@ class Course extends StatelessWidget {
           color: Color(0xFF644AFF),
         ),
         actions: <Widget>[
-          Container(
-            margin: const EdgeInsets.only(right: 16.0),
-            child: const CircleAvatar(
-              radius: 20,
-              backgroundImage: AssetImage('path_to_your_image'),
-            ),
+          FutureBuilder<ProfileModel>(
+            future: getProfile(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else if (snapshot.hasData) {
+                final profile = snapshot.data!;
+                return Container(
+                  margin: const EdgeInsets.only(right: 16.0),
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundImage: profile.profile.profilePicture != null
+                        ? NetworkImage(profile.profile.profilePicture!)
+                        : null,
+                  ),
+                );
+              } else {
+                return Container();
+              }
+            },
           ),
         ],
       ),

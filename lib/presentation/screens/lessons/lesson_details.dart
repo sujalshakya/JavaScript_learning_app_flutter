@@ -31,7 +31,7 @@ class _LessonDetailsState extends State<LessonDetails> {
   List<Map<String, dynamic>> lessons = [];
   Color selectedOptionColor = Colors.black;
   String selectedOption = '';
-  int _currentBlockIndex = 0;
+  final int _currentBlockIndex = 0;
   @override
   void initState() {
     super.initState();

@@ -121,7 +121,6 @@ class EnterOTPState extends State<EnterOTP> {
                   child: ElevatedButton(
                     onPressed: () {
                       sendOTP(widget.email, otp);
-                      print(otp);
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,

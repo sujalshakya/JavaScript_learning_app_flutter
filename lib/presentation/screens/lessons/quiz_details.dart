@@ -7,7 +7,7 @@ class QuizDetails extends StatefulWidget {
   final String question;
   final String? correctAnswer;
   final List options;
-  QuizDetails({
+  const QuizDetails({
     Key? key,
     required this.question,
     required this.correctAnswer,
@@ -137,7 +137,7 @@ class _QuizDetailsState extends State<QuizDetails> {
                   child: Column(
                     children: [
                       Stack(children: [
-                        Container(
+                        SizedBox(
                           height: 40,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:javascript/presentation/screens/data_structures.dart';
 import 'package:javascript/presentation/screens/lessons/all_lessons.dart';
 import 'package:javascript/presentation/screens/course.dart';
 import 'package:javascript/presentation/screens/daily_streak.dart';
@@ -10,6 +11,7 @@ import 'package:javascript/presentation/screens/javascript.dart';
 import 'package:javascript/presentation/screens/login/forget_passsword_otp.dart';
 import 'package:javascript/presentation/screens/login/login.dart';
 import 'package:javascript/presentation/screens/notifications.dart';
+import 'package:javascript/presentation/screens/profile/edit_profile.dart';
 import 'package:javascript/presentation/screens/profile/leaderboard.dart';
 import 'package:javascript/presentation/screens/profile/profile.dart';
 import 'package:javascript/presentation/screens/login/reset_password.dart';
@@ -61,7 +63,10 @@ class MyApp extends StatelessWidget {
               ),
           'javascript': (context) => const JavaScript(),
           'challenge': (context) => const Challenges(),
-          'splash': (context) => const SplashScreen()
+          'splash': (context) => const SplashScreen(),
+          'datastructure': (context) => const DataStructures(
+                index: 0,
+              )
         }));
   }
 }
