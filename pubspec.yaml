@@ -52,6 +52,7 @@ dependencies:
   cloudinary_url_gen: ^1.0.0
   otp_pin_field: ^1.2.2
   google_sign_in: ^6.2.1
+  intl: ^0.18.1
 
 
 

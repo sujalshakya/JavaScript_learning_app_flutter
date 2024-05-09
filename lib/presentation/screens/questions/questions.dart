@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:javascript/constants/constants.dart';
-import 'package:javascript/presentation/screens/questions/question_model.dart';
+import 'package:javascript/models/question_model.dart';
 import 'package:javascript/presentation/screens/questions/questions_details.dart';
 
 class Questions extends StatefulWidget {

@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:javascript/presentation/screens/questions/question_model.dart';
+import 'package:javascript/models/question_model.dart';
 import 'package:javascript/presentation/screens/questions/questions_details.dart';
 import 'package:http/http.dart' as http;
 

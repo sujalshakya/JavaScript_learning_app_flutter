@@ -6,10 +6,12 @@ import 'package:javascript/models/profile_model.dart';
 import 'package:javascript/presentation/screens/daily_streak.dart';
 import 'package:javascript/presentation/screens/data_structures.dart';
 import 'package:javascript/presentation/screens/questions/questions.dart';
+import 'package:javascript/presentation/screens/questions/questions_details.dart';
 import 'package:javascript/presentation/widgets/bottom_nav_bar.dart';
 import 'package:javascript/presentation/widgets/drawer.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:http/http.dart' as http;
+import 'package:javascript/models/question_model.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -20,11 +22,65 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late ProfileModel profile;
+  bool isLoading = true;
 
+  late List<QuestionModel> questions = [];
   @override
   void initState() {
     super.initState();
     getProfile();
+    fetchQuestions();
+  }
+
+  Future<void> fetchQuestions() async {
+    try {
+      final response = await http.get(Uri.parse(
+          'https://api.codynn.com/api/question?language=javascript&page=1&limit=100'));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        final List<dynamic> questionsData = responseData['questions'];
+        for (var data in questionsData) {
+          final QuestionModel question = QuestionModel(
+            question: data['question'],
+            algorithm: data['algorithm'],
+            explanation: data['solutions'][0]['explanation'],
+            flowchart: data['flowchart'],
+            code: data['solutions'][0]['code'],
+            id: data['id'],
+          );
+          setState(() {
+            questions.add(question);
+          });
+        }
+      } else {}
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<bool> postCode(String code) async {
+    final response = await http.post(
+      Uri.parse('https://compiler.codynn.com/api/run'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'code': code,
+        'language': 'javascript',
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      final output = responseData['output'];
+
+      return true;
+    }
+    return false;
   }
 
   Future<ProfileModel>? getProfile() async {
@@ -51,6 +107,10 @@ class _HomeState extends State<Home> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+    int date = DateTime.now().day;
+    int month = DateTime.now().month;
+
+    int random = ((month + 1) * date) ~/ 2;
 
     return Scaffold(
       key: scaffoldKey,
@@ -623,105 +683,29 @@ class _HomeState extends State<Home> {
             const SizedBox(
               height: 16,
             ),
-            Container(
-              height: screenHeight * 0.1,
-              width: screenWidth * 0.9,
-              decoration: BoxDecoration(
-                color: const Color(0XFFF5F5F5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      "Rename files",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            isLoading
+                ? const CircularProgressIndicator()
+                : SizedBox(
+                    height: screenHeight * 0.35,
+                    width: screenWidth * 0.9,
+                    child: ListView.builder(
+                      itemCount: 3,
+                      itemBuilder: (context, index) {
+                        final question = questions[random];
+                        random++;
+                        random++;
+
+                        return Script(
+                            index: index,
+                            question: question.question,
+                            algorithm: question.algorithm,
+                            explanation: question.explanation,
+                            flowchart: question.flowchart,
+                            code: question.code,
+                            id: question.id);
+                      },
                     ),
                   ),
-                  Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        "Solve this problem",
-                        style: TextStyle(
-                            color: Color(
-                              0XFF737373,
-                            ),
-                            fontSize: 12),
-                      ))
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            Container(
-              height: screenHeight * 0.1,
-              width: screenWidth * 0.9,
-              decoration: BoxDecoration(
-                color: const Color(0XFFF5F5F5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      "Rename files",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                    ),
-                  ),
-                  Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        "Solve this problem",
-                        style: TextStyle(
-                            color: Color(
-                              0XFF737373,
-                            ),
-                            fontSize: 12),
-                      ))
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            Container(
-              height: screenHeight * 0.1,
-              width: screenWidth * 0.9,
-              decoration: BoxDecoration(
-                color: const Color(0XFFF5F5F5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      "Rename files",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                    ),
-                  ),
-                  Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        "Solve this problem",
-                        style: TextStyle(
-                            color: Color(
-                              0XFF737373,
-                            ),
-                            fontSize: 12),
-                      ))
-                ],
-              ),
-            ),
             SizedBox(
               height: screenHeight * 0.02,
             ),
@@ -834,6 +818,84 @@ class _HomeState extends State<Home> {
         ),
       ),
       drawer: MyDrawer(),
+    );
+  }
+}
+
+class Script extends StatelessWidget {
+  final String? question;
+  final String? algorithm;
+  final String? explanation;
+  final String? flowchart;
+  final String? code;
+  final String? id;
+  final int index;
+  const Script({
+    Key? key,
+    this.question,
+    this.algorithm,
+    this.flowchart,
+    this.code,
+    required this.index,
+    this.explanation,
+    this.id,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => QuestionDetails(
+              question: question,
+              algorithm: algorithm,
+              index: index,
+              explanation: explanation,
+              flowchart: flowchart,
+              code: code,
+              id: id,
+            ),
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          height: screenHeight * 0.1,
+          width: screenWidth * 0.9,
+          decoration: BoxDecoration(
+            color: const Color(0XFFF5F5F5),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  question!,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w600, fontSize: 14),
+                ),
+              ),
+              const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    "Solve this problem",
+                    style: TextStyle(
+                        color: Color(
+                          0XFF737373,
+                        ),
+                        fontSize: 12),
+                  ))
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

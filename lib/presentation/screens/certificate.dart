@@ -2,19 +2,20 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:javascript/constants/text_style.dart';
+import 'package:javascript/constants/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:javascript/models/profile_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:javascript/presentation/widgets/widebutton.dart';
 
-class MyCertificates extends StatefulWidget {
-  const MyCertificates({super.key});
+class Certificates extends StatefulWidget {
+  const Certificates({super.key});
 
   @override
-  State<MyCertificates> createState() => _MyCertificatesState();
+  State<Certificates> createState() => _CertificatesState();
 }
 
-class _MyCertificatesState extends State<MyCertificates> {
+class _CertificatesState extends State<Certificates> {
   late ProfileModel profile;
 
   @override
@@ -50,24 +51,6 @@ class _MyCertificatesState extends State<MyCertificates> {
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        elevation: 0,
-        backgroundColor: Colors.white54,
-        iconTheme: const IconThemeData(
-          color: Color(0xFF644AFF),
-        ),
-        title: const Text(
-          "My Certificates",
-          style: TextStyle(color: Colors.black, fontSize: 16),
-        ),
-        centerTitle: true,
-      ),
       body: FutureBuilder<ProfileModel?>(
         future: getProfile(),
         builder: (context, snapshot) {
@@ -85,18 +68,53 @@ class _MyCertificatesState extends State<MyCertificates> {
               child: SizedBox(
                 width: screenWidth * 0.9,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          formattedDate,
-                          style: AppTextStyles.headingStyle,
+                    SizedBox(
+                      height: screenHeight * 0.14,
+                    ),
+                    const Image(
+                      image: AssetImage("assets/icons/graduate.png"),
+                      height: 132,
+                      width: 132,
+                    ),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            RichText(
+                              text: const TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "Wohoo",
+                                    style: TextStyle(
+                                        color: AppConstants.primaryColor,
+                                        fontSize: 22),
+                                  ),
+                                  TextSpan(
+                                    text: ", you have sucessfully ",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 22),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        const Spacer(),
-                        const Icon(Icons.file_download_outlined),
-                        const Icon(Icons.ios_share)
-                      ],
+                      ),
+                    ),
+                  
+                    const Text(
+                      "completed the course.",
+                      style: TextStyle(color: Colors.black, fontSize: 22),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text("Here's your certificated of completion"),
                     ),
                     Container(
                       width: screenWidth * 0.9,
@@ -139,6 +157,23 @@ class _MyCertificatesState extends State<MyCertificates> {
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    WideButton(
+                        text: "Continue",
+                        screenHeight: screenHeight,
+                        onPressed: () {}),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: const Text(
+                          "Download Certificate",
+                          style: TextStyle(
+                            color: AppConstants.primaryColor,
+                          ),
                         ),
                       ),
                     )
