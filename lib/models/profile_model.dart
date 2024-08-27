@@ -11,7 +11,6 @@ class ProfileModel {
       ProfileModel.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
-
   factory ProfileModel.fromJson(Map<String, dynamic> json) => ProfileModel(
         profile: Profile.fromJson(json["profile"]),
       );
@@ -20,7 +19,7 @@ class ProfileModel {
         "profile": profile.toJson(),
       };
 }
-
+//comment for git merge
 class Profile {
   String? id;
   String? username;
